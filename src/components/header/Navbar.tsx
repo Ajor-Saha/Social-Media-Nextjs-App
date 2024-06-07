@@ -14,6 +14,8 @@ import { signOut, useSession } from "next-auth/react";
 import { User } from "next-auth";
 import ThreadCard from "../card/ThreadCard";
 import { useRouter } from "next/navigation";
+import { TbBuildingCommunity } from "react-icons/tb";
+
 
 function Navbar() {
   const { data: session } = useSession();
@@ -93,9 +95,11 @@ function Navbar() {
           </button>
         </Link>
        <ThreadCard />
-        <a className="btn btn-ghost text-xl">
-          <FaRegHeart />
-        </a>
+       <Link href="/community">
+          <button className="btn btn-ghost text-xl">
+          <TbBuildingCommunity />
+          </button>
+        </Link>
         {session ? (
           <Link href="/dashboard" className="btn btn-ghost text-xl">
             <RxAvatar />

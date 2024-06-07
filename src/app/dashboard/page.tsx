@@ -171,7 +171,7 @@ function UserDashboard() {
           </div>
           <div className="mx-auto">
             <button
-              className="btn btn-active btn-ghost px-52"
+              className="btn btn-active btn-ghost px-32 md:px-52"
               onClick={() => setShowModal(true)}
             >
               Edit

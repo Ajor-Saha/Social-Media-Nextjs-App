@@ -35,6 +35,11 @@ interface CardProps {
   owner: owner;
 }
 
+interface Comment {
+  content: string;
+  owner: owner;
+}
+
 const PostCard: React.FC<CardProps> = ({
   threadId,
   description,
@@ -53,6 +58,7 @@ const PostCard: React.FC<CardProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [comment, setComment] = useState<string>("");
   const [isShowComments, setIsShowComments] = useState(false);
+  const [threadComments, setThreadComments] = useState<Comment[]>([]);
 
   const fetchLikeCount = useCallback(async () => {
     try {
@@ -97,7 +103,6 @@ const PostCard: React.FC<CardProps> = ({
         { content: comment }
       );
       if (response.data.success) {
-        
         setComment("");
       } else {
         toast.error(response.data.message);
@@ -107,6 +112,22 @@ const PostCard: React.FC<CardProps> = ({
       toast.error(axiosError.response?.data.message ?? "Error adding comment");
     }
   };
+
+  const fetchThreadComments = useCallback(async () => {
+    try {
+      const response = await axios.get<any>(`/api/comment/${threadId}`);
+      if (response.data.success) {
+        setThreadComments(response.data.data);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(
+        axiosError.response?.data.message ?? "Error while fetching comments"
+      );
+    }
+  }, [threadId]);
 
   useEffect(() => {
     fetchLikeCount();
@@ -130,9 +151,12 @@ const PostCard: React.FC<CardProps> = ({
     setIsModalOpen(false);
   };
 
-  const handleComments = () => {
-    setIsShowComments(!isShowComments)
-  }
+  const handleComments = async () => {
+    if (!isShowComments) {
+      await fetchThreadComments();
+    }
+    setIsShowComments(!isShowComments);
+  };
 
   return (
     <div className="md:w-96 w-80 lg:w-[500px] rounded overflow-hidden p-2 my-2">
@@ -283,19 +307,29 @@ const PostCard: React.FC<CardProps> = ({
                 onChange={(e) => setComment(e.target.value)}
               ></textarea>
               <div className="card-actions justify-end">
-                <button className="btn btn-secondary" onClick={handleAddComment}>Submit</button>
+                <button
+                  className="btn btn-secondary"
+                  onClick={handleAddComment}
+                >
+                  Submit
+                </button>
               </div>
               <div>
-              <button className="btn btn-outline" onClick={handleComments}>View All Comment</button>
+                <button className="btn btn-outline" onClick={handleComments}>
+                  {isShowComments ? "Close all comments" : "View All Comments"}
+                </button>
               </div>
-              {
-                isShowComments && (
-                  <div className="overflow-y-auto">
-                    <CommentCard />
-                    <CommentCard />
-                  </div>
-                )
-              }
+              {isShowComments && (
+                <div className="overflow-y-auto py-2">
+                  {threadComments?.length > 0 ? (
+                    threadComments.map((comment, index) => (
+                      <CommentCard comment={comment} key={index} />
+                    ))
+                  ) : (
+                    <p>No comments available.</p>
+                  )}
+                </div>
+              )}
             </div>
           </div>
         </div>

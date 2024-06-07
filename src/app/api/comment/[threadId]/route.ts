@@ -2,7 +2,6 @@ import dbConnect from "@/lib/dbConnect";
 import CommentModel from "@/model/Comment";
 import ThreadModel from "@/model/Thread";
 
-
 export async function GET(
   request: Request,
   { params }: { params: { threadId: string } }
@@ -11,8 +10,8 @@ export async function GET(
 
   try {
     const threadId = params.threadId;
-    
-    const thread = await ThreadModel.findById({ _id:threadId });
+
+    const thread = await ThreadModel.findById({ _id: threadId });
     if (!thread) {
       return new Response(
         JSON.stringify({
@@ -23,17 +22,15 @@ export async function GET(
       );
     }
 
-    const comments = await CommentModel.find({ thread: threadId });
+    const comments = await CommentModel.find({ thread: threadId }).populate('owner', 'username avatar');
 
-    
     return new Response(
       JSON.stringify({
         success: true,
         message: "Comments fetched successfully",
-        datas: comments
-        
+        data: comments,
       }),
-      { status: 201 }
+      { status: 200 } // 200 is more appropriate for a successful GET request
     );
   } catch (error) {
     console.error("Error fetching comments:", error);
