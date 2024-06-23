@@ -23,6 +23,7 @@ interface Thread {
   description: string;
   tag: { _id: string; name: string };
   images: string[];
+  videos: string[];
   ownerId: { _id: string; username: string; avatar: string };
   isPublished: boolean;
   createdAt: string;
@@ -109,7 +110,7 @@ function UserProfile() {
 
   return (
     <div className="py-20 flex flex-col justify-center items-center">
-      <div className="card md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl">
+      <div className="card  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl">
         <div className="card-body">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center flex-col">
@@ -152,23 +153,19 @@ function UserProfile() {
               {isFollowed ? "Following" : "Follow"}
             </button>
           </div>
-          <div className="mx-auto mt-5 flex flex-col justify-center items-center w-2/3">
+          <div className="mx-auto mt-5 flex flex-col justify-center items-center">
             <div className="relative right-0">
-              <ul className="relative gap-10 flex flex-wrap p-1 list-none rounded-xl bg-blue-gray-50/60" data-tabs="tabs" role="list">
-                <li className="z-30 pr-5 flex-auto text-center">
-                  <a className={`z-30 border-b-2 flex items-center justify-center w-full px-0 py-1 mb-0 transition-all ease-in-out border-0 rounded-lg cursor-pointer bg-inherit ${activeTab === "Threads" ? "active" : ""} ${activeTab === "Threads" ? "border-b-2 border-gray-600" : ""}`} data-tab-target="" role="tab" aria-selected={activeTab === "Threads"} aria-controls="Threads" onClick={() => handleTabChange("Threads")}>
-                   Threads
-                  </a>
+              <ul className="flex space-x-4 mb-4 border-b-2 border-gray-200 justify-between">
+                <li className={`cursor-pointer w-40 md:w-52 pb-2 ${activeTab === "Threads" ? "border-b-2 border-gray-700 text-blue-500" : ""}`} onClick={() => handleTabChange("Threads")}>
+                  <span className="ml-20">Posts</span>
                 </li>
-                <li className="z-30 flex-auto text-center">
-                  <a className={`z-30 flex items-center justify-center w-full px-0 py-1 mb-0 transition-all ease-in-out border-0 rounded-lg cursor-pointer  bg-inherit ${activeTab === "Replies" ? "active" : ""} ${activeTab === "Replies" ? "border-b-2 border-gray-600" : ""}`} data-tab-target="" role="tab" aria-selected={activeTab === "Replies"} aria-controls="Replies" onClick={() => handleTabChange("Replies")}>
-                    <span className="ml-1">Replies</span>
-                  </a>
+                <li className={`cursor-pointer w-40 sm:w-52 pb-2 ${activeTab === "Replies" ? "border-b-2 border-gray-700 text-blue-500" : ""}`} onClick={() => handleTabChange("Replies")}>
+                <span className="ml-10">Replies</span>
                 </li>
               </ul>
-              <div data-tab-content="" className="p-5">
-                <div className={`block ${activeTab === "Threads" ? "opacity-100" : "hidden opacity-0"}`} id="Threads" role="tabpanel">
-                {userThreads.length > 0 ? (
+              <div>
+                <div className={`${activeTab === "Threads" ? "block" : "hidden"}`}>
+                  {userThreads.length > 0 ? (
                     userThreads.map((thread) => (
                       <PostCard
                         key={thread._id}
@@ -177,14 +174,15 @@ function UserProfile() {
                         tag={thread.tag}
                         images={thread.images}
                         owner={thread.ownerId}
+                        videos={thread.videos}
                       />
                     ))
                   ) : (
                     <p>No threads available.</p>
                   )}
                 </div>
-                <div className={`block ${activeTab === "Replies" ? "opacity-100" : "hidden opacity-0"}`} id="Replies" role="tabpanel">
-                  <p className="block font-sans text-base antialiased font-light leading-relaxed text-inherit text-blue-gray-500">
+                <div className={`${activeTab === "Replies" ? "block" : "hidden"}`}>
+                  <p className="font-sans text-base font-light text-gray-500">
                     All Replies are here
                   </p>
                 </div>

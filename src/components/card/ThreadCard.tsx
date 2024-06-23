@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FaRegEdit, FaImage } from "react-icons/fa";
+import { FaRegEdit, FaImage, FaVideo } from "react-icons/fa";
 import { GiSuspicious } from "react-icons/gi";
 import Image from "next/image";
 import axios, { AxiosError } from "axios";
@@ -12,6 +12,7 @@ import { threadSchema } from "@/schemas/threadSchema";
 import { ApiResponse } from "@/types/ApiResponse";
 import { useSession } from "next-auth/react";
 import { User } from "next-auth";
+import { AiOutlineClose } from "react-icons/ai";
 
 interface Tag {
   _id: string;
@@ -27,9 +28,6 @@ const ThreadCard = () => {
   const { data: session } = useSession();
   const user: User = session?.user;
 
-  
-  
-
   const {
     handleSubmit,
     register,
@@ -41,13 +39,13 @@ const ThreadCard = () => {
     resolver: zodResolver(threadSchema),
     defaultValues: {
       description: "",
-      tag: "", // Single tag field
+      tag: "",
       images: [] as File[],
+      videos: [] as File[],
     },
   });
 
   useEffect(() => {
-    // Fetch available tags from the backend
     const fetchTags = async () => {
       try {
         const response = await axios.get("/api/tag/get-tags");
@@ -66,6 +64,15 @@ const ThreadCard = () => {
       const images = watch("images") || [];
       const updatedImages = [...images, ...Array.from(files)];
       setValue("images", updatedImages);
+    }
+  };
+
+  const handleVideoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const videos = watch("videos") || [];
+      const updatedVideos = [...videos, ...Array.from(files)];
+      setValue("videos", updatedVideos);
     }
   };
 
@@ -102,8 +109,16 @@ const ThreadCard = () => {
       }
     }
 
+    if (data.videos) {
+      for (const video of data.videos) {
+        if (video && (video as File) instanceof File) {
+          formData.append("videos", video);
+        }
+      }
+    }
+
     if (data.tag) {
-      formData.append("tag", data.tag); // Sending single tag field
+      formData.append("tag", data.tag);
     }
 
     try {
@@ -114,9 +129,9 @@ const ThreadCard = () => {
       });
 
       if (res.data.success) {
-        toast.success("Thread created successfully");
         setShowModal(false);
         reset();
+        toast.success("Thread created successfully");
       } else {
         toast.error("Error creating thread: " + res.data.message);
       }
@@ -138,23 +153,21 @@ const ThreadCard = () => {
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-opacity-50 bg-gray-800">
-          <div className="bg-white rounded-lg overflow-hidden shadow-lg w-full md:w-2/3 lg:w-1/2 xl:w-1/3">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-900">Create Thread</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="card card-side bg-base-100 shadow-xl w-[450px] md:w-[600px] lg:w-[750px]">
+            <div className="card-body">
               <button
                 onClick={() => setShowModal(false)}
-                className="text-gray-400 hover:text-gray-700 text-xl font-bold"
+                className="absolute top-2 right-2 rounded-full p-1"
               >
-                <span className="sr-only">Close</span>
-                &times;
+                <AiOutlineClose size={24} />
               </button>
-            </div>
+              <h3 className="card-title">Create Thread</h3>
+            
             <div className="px-10 py-10">
               <div className="flex items-center mb-4">
-              <GiSuspicious size={40}/>
-
-                <span className="ml-4 font-semibold text-gray-800">{user.username}</span>
+                <GiSuspicious size={40} />
+                <span className="ml-4 font-semibold">{user.username}</span>
               </div>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <textarea
@@ -177,17 +190,27 @@ const ThreadCard = () => {
                       onChange={handleImageChange}
                     />
                   </label>
+                  <label className="flex items-center cursor-pointer">
+                    <FaVideo className="text-2xl mr-2" />
+                    <input
+                      type="file"
+                      accept="video/*"
+                      multiple
+                      className="hidden"
+                      onChange={handleVideoChange}
+                    />
+                  </label>
                   <input
                     type="text"
                     className="w-2/3 border p-2 rounded"
                     placeholder="Add or select a tag"
                     {...register("tag")}
-                    name="tag" // Added name attribute
+                    name="tag"
                     onChange={handleTagInputChange}
                     onFocus={() => setDropdownVisible(true)}
                   />
                   {dropdownVisible && (
-                    <div className="absolute top-full left-0  border rounded shadow-lg max-h-48 overflow-y-auto z-10">
+                    <div className="absolute top-full left-0 border rounded shadow-lg max-h-48 overflow-y-auto z-10 bg-white">
                       {filteredTags.map((tag) => (
                         <div
                           key={tag._id}
@@ -212,16 +235,28 @@ const ThreadCard = () => {
                     </div>
                   ))}
                 </div>
+                <div className="flex flex-wrap mt-4 space-x-2">
+                  {watch("videos").map((video: File, index: number) => (
+                    <div key={index} className="relative w-24 h-20">
+                      <video
+                        src={URL.createObjectURL(video)}
+                        controls
+                        className="rounded w-full h-full object-cover"
+                      />
+                    </div>
+                  ))}
+                </div>
                 <div className="flex justify-end mt-4">
                   <button
                     disabled={isSubmitting}
-                    type="submit" // Added type="submit"
-                    className="btn btn-primary"
+                    type="submit"
+                    className="btn btn-primary px-5"
                   >
-                    {isSubmitting ? "Loading..." : "Post"}
+                    {isSubmitting ? <span className="loading loading-spinner loading-lg"></span> : "Post"}
                   </button>
                 </div>
               </form>
+            </div>
             </div>
           </div>
         </div>

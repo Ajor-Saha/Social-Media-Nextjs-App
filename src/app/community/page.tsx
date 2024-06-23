@@ -1,6 +1,5 @@
 "use client";
-
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -12,12 +11,18 @@ import "react-toastify/dist/ReactToastify.css";
 import { communitySchema } from "@/schemas/communitySchema";
 import { useSession } from "next-auth/react";
 import { User } from "next-auth";
+import { ApiResponse } from "@/types/ApiResponse";
+import Image from "next/image";
+import FollowComunityCard from "@/components/card/FollowComunityCard";
 
 const CommunityPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const { data: session } = useSession();
   const user: User = session?.user;
+  const [communities, setCommunities] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
 
   const {
     handleSubmit,
@@ -87,6 +92,27 @@ const CommunityPage = () => {
     }
   };
 
+  const fetchCommunities = async (page: number) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/api/community?page=${page}`);
+      if (response.data.success) {
+        setCommunities(response.data.communities);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      let errorMessage =
+        axiosError.response?.data.message ?? "Error while fetching communities";
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //console.log(communities);
+
   return (
     <div className="py-20 flex flex-col justify-center items-center">
       <ToastContainer />
@@ -94,7 +120,32 @@ const CommunityPage = () => {
         <div className="card-body">
           <div className="flex gap-5 justify-center items-center">
             <button className="btn btn-neutral md:px-20 px-16">Top</button>
-            <button className="btn btn-neutral md:px-20 px-16">Recent</button>
+            <button
+              onClick={() => fetchCommunities(1)}
+              className="btn btn-neutral md:px-20 px-16"
+            >
+              Recent
+            </button>
+          </div>
+          <div>
+            {loading ? (
+              <div className="flex justify-center items-center">
+                <span className="loading loading-bars loading-xs"></span>
+                <span className="loading loading-bars loading-sm"></span>
+                <span className="loading loading-bars loading-md"></span>
+                <span className="loading loading-bars loading-lg"></span>
+              </div>
+            ) : (
+              communities.map((community) => (
+                <FollowComunityCard
+                  key={community._id}
+                  name={community.name}
+                  communityId={community._id}
+                  members={community.members}
+                  coverImage={community.coverImage}
+                />
+              ))
+            )}
           </div>
         </div>
       </div>
@@ -142,7 +193,15 @@ const CommunityPage = () => {
                   accept="image/*"
                   onChange={handleImageChange}
                 />
-                {imageUrl && <img src={imageUrl} alt="Cover" className="mt-2 w-32 h-24 p-2" />}
+                {imageUrl && (
+                  <Image
+                    src={imageUrl}
+                    alt="Cover"
+                    className="mt-2 w-32 h-24 p-2"
+                    width={100}
+                    height={200}
+                  />
+                )}
                 {errors.coverImage && (
                   <p className="text-red-500">{`${errors.coverImage.message}`}</p>
                 )}

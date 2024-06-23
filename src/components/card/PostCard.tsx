@@ -13,8 +13,10 @@ import { useSession } from "next-auth/react";
 import { User } from "next-auth";
 import Link from "next/link";
 import { AiOutlineClose } from "react-icons/ai"; // Import close icon
-import FollowCard from "./FollowCard";
 import CommentCard from "./CommentCard";
+import { BsThreeDots } from "react-icons/bs";
+import { BsSave2 } from "react-icons/bs";
+
 
 interface Tag {
   _id: string;
@@ -32,6 +34,7 @@ interface CardProps {
   description: string;
   tag: Tag;
   images: string[];
+  videos: string[];
   owner: owner;
 }
 
@@ -46,6 +49,7 @@ const PostCard: React.FC<CardProps> = ({
   tag,
   images,
   owner,
+  videos,
 }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState<number>(0);
@@ -158,18 +162,24 @@ const PostCard: React.FC<CardProps> = ({
     setIsShowComments(!isShowComments);
   };
 
+
+  
+  
+
   return (
     <div className="md:w-96 w-80 lg:w-[500px] rounded overflow-hidden p-2 my-2">
       <div className="flex flex-row justify-between items-start gap-3">
         <div className="flex items-center">
           <div className="avatar mt-3 px-2">
             <div className="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-              <img
+              <Image
                 src={
                   owner?.avatar ||
                   "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                 }
                 alt="Avatar"
+                width={12}
+                height={12}
               />
             </div>
           </div>
@@ -186,39 +196,59 @@ const PostCard: React.FC<CardProps> = ({
             <p className="font-semibold text-gray-500">1d</p>
           </div>
         </div>
-        <button className="btn btn-square btn-ghost">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            className="inline-block w-5 h-5 stroke-current"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"
-            ></path>
-          </svg>
+        <button className="btn btn-square btn-circle">
+          <div className="dropdown dropdown-bottom dropdown-end">
+            <div tabIndex={0} role="button">
+              <BsThreeDots  size={24}/>
+            </div>
+            <ul
+              tabIndex={0}
+              className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
+            >
+              <li className="flex">
+                <a>save</a>
+              </li>
+              <li className={user.username === owner.username ? "block" : "hidden"}>
+                <Link href={`postEdit/${threadId}`}>Edit</Link>
+              </li>
+              <li>
+                <a>Follow</a>
+              </li>
+              <li>
+                <a>Copy link</a>
+              </li>
+            </ul>
+          </div>
         </button>
       </div>
 
-      <div className="px-6 py-4">
-        <div className="font-semibold text-xl mb-2">{description}</div>
+      <div className="px-6 pt-4">
+        <div className="font-semibold">{description}</div>
       </div>
-      <div className="px-6 pt-4 pb-2">
-        <a className="link link-primary mr-2">#{tag.name}</a>
+      <div className="px-6  pb-5">
+        <Link href={`search/tag/${tag?.name}`} className="link link-primary mr-2">#{tag.name}</Link>
       </div>
-      <div className="carousel carousel-center max-w-md px-1 py-2 space-x-4 bg-neutral rounded-box">
+      <div className="carousel w-full">
         {images.map((image, index) => (
-          <div key={index} className="carousel-item">
+          <div key={index} className="carousel-item mr-2">
             <Image
               src={image}
               alt={`Image ${index + 1}`}
+              width={360}
+              height={500}
+              className="rounded-box cursor-pointer w-[300px] sm:w-[320px] md:w-[350px] lg:w-[450px]"
+              onClick={() => openFullScreen(image)}
+            />
+          </div>
+        ))}
+        {videos?.map((video, index) => (
+          <div key={index} className="carousel-item">
+            <video
+              src={video}
+              controls
               width={350}
               height={200}
-              className="rounded-box cursor-pointer"
-              onClick={() => openFullScreen(image)}
+              className="rounded-box cursor-pointer w-[300px] sm:w-[320px] md:w-[350px] lg:w-[480px]"
             />
           </div>
         ))}
@@ -275,27 +305,41 @@ const PostCard: React.FC<CardProps> = ({
               <h2 className="card-title">
                 <div className="avatar mt-3 px-2">
                   <div className="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-                    <img
+                    <Image
                       src={
                         owner?.avatar ||
                         "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                       }
                       alt="Avatar"
+                      width={12}
+                      height={12}
                     />
                   </div>
                 </div>
                 {owner.username}
               </h2>
               <p className="text-wrap">{description}</p>
-              <div className="carousel carousel-center max-w-md px-1 py-2 space-x-4 bg-neutral rounded-box">
-                {images?.map((image, index) => (
-                  <div key={index} className="carousel-item">
+              <div className="carousel w-full">
+                {images.map((image, index) => (
+                  <div key={index} className="carousel-item mr-2">
                     <Image
                       src={image}
                       alt={`Image ${index + 1}`}
+                      width={360}
+                      height={500}
+                      className="rounded-box cursor-pointer w-[300px] sm:w-[320px] md:w-[370px] lg:w-[480px]"
+                      onClick={() => openFullScreen(image)}
+                    />
+                  </div>
+                ))}
+                {videos?.map((video, index) => (
+                  <div key={index} className="carousel-item">
+                    <video
+                      src={video}
+                      controls
                       width={350}
                       height={200}
-                      className="rounded-box cursor-pointer"
+                      className="rounded-box cursor-pointer w-[300px] sm:w-[320px] md:w-[370px] lg:w-[480px]"
                     />
                   </div>
                 ))}

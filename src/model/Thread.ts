@@ -4,6 +4,7 @@ export interface Thread extends Document {
   ownerId: mongoose.Types.ObjectId;
   description: string;
   images: string[];
+  videos: string[];
   tag: mongoose.Types.ObjectId;
   isPublished: boolean;
   likes: number;
@@ -21,6 +22,11 @@ const ThreadSchema: Schema<Thread> = new mongoose.Schema({
     required: true,
   },
   images: [
+    {
+      type: String,
+    },
+  ],
+  videos: [
     {
       type: String,
     },

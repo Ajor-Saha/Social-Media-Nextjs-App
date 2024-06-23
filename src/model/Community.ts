@@ -10,6 +10,7 @@ interface Community extends Document {
   about: string;
 }
 
+
 const CommunitySchema: Schema<Community> = new mongoose.Schema(
   {
     name: {

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PostCard from "@/components/card/PostCard";
+import AiPost from "@/components/post/AiPost";
 
 // Skeleton component
 const SkeletonLoader = () => (
@@ -38,7 +39,10 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="container mx-auto p-32">
+    <div className="container mx-auto p-24">
+      <div className="flex justify-center items-center">
+      <AiPost />
+      </div>
       <div className="flex flex-col justify-center items-center">
         {loading ? (
           // Render skeletons while loading
@@ -55,6 +59,7 @@ const Home = () => {
               tag={item.tag}
               images={item.images}
               owner={item.ownerId}
+              videos={item.videos}
             />
           ))
         )}

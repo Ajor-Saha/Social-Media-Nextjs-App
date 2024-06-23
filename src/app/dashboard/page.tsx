@@ -123,21 +123,21 @@ function UserDashboard() {
 
   return (
     <div className="py-20 flex flex-col justify-center items-center">
-      <div className="card md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl">
+      <div className="card border-x border-gray-100 md:w-[550px] lg:w-[650px] sm:w-[500px] w-[400px] bg-base-100 shadow-xl">
         <div className="card-body">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center flex-col">
               <h1 className="text-lg font-bold">{userDetails?.fullName}</h1>
               <h3 className="font-semibold text-sm">{user?.username}</h3>
             </div>
-            <div className="flex items-center">
+            <div className="flex items-center avatar">
               <label htmlFor="profilePictureInput">
                 <Image
                   src={userDetails.avatar || "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"}
                   alt="Avatar Right"
-                  width={50}
-                  height={50}
-                  className="rounded-full cursor-pointer"
+                  width={40}
+                  height={40}
+                  className="w-24 cursor-pointer rounded-full ring ring-primary ring-offset-base-100 ring-offset-2"
                 />
               </label>
               <input
@@ -177,81 +177,36 @@ function UserDashboard() {
               Edit
             </button>
           </div>
-          <div className="mx-auto mt-5 flex flex-col justify-center items-center w-2/3">
+          <div className="mx-auto mt-5 flex flex-col justify-center items-center">
             <div className="relative right-0">
-              <ul
-                className="relative gap-10 flex flex-wrap p-1 list-none rounded-xl bg-blue-gray-50/60"
-                data-tabs="tabs"
-                role="list"
-              >
-                <li className="z-30 pr-5 flex-auto text-center">
-                  <a
-                    className={`z-30 border-b-2 flex items-center justify-center w-full px-0 py-1 mb-0 transition-all ease-in-out border-0 rounded-lg cursor-pointer bg-inherit ${
-                      activeTab === "Threads" ? "active" : ""
-                    } ${
-                      activeTab === "Threads"
-                        ? "border-b-2 border-gray-600"
-                        : ""
-                    }`}
-                    data-tab-target=""
-                    role="tab"
-                    aria-selected={activeTab === "Threads"}
-                    aria-controls="Threads"
-                    onClick={() => handleTabChange("Threads")}
-                  >
-                    <span className="ml-1">Threads</span>
-                  </a>
+              <ul className="flex space-x-4 mb-4 border-b-2 border-gray-200 justify-between">
+                <li className={`cursor-pointer w-40 md:w-52 pb-2 ${activeTab === "Threads" ? "border-b-2 border-gray-700 text-blue-500" : ""}`} onClick={() => handleTabChange("Threads")}>
+                  <span className="ml-20">Posts</span>
                 </li>
-                <li className="z-30 flex-auto text-center">
-                  <a
-                    className={`z-30 flex items-center justify-center w-full px-0 py-1 mb-0 transition-all ease-in-out border-0 rounded-lg cursor-pointer  bg-inherit ${
-                      activeTab === "Replies" ? "active" : ""
-                    } ${
-                      activeTab === "Replies"
-                        ? "border-b-2 border-gray-600"
-                        : ""
-                    }`}
-                    data-tab-target=""
-                    role="tab"
-                    aria-selected={activeTab === "Replies"}
-                    aria-controls="Replies"
-                    onClick={() => handleTabChange("Replies")}
-                  >
-                    <span className="ml-1">Replies</span>
-                  </a>
+                <li className={`cursor-pointer w-40 sm:w-52 pb-2 ${activeTab === "Replies" ? "border-b-2 border-gray-700 text-blue-500" : ""}`} onClick={() => handleTabChange("Replies")}>
+                <span className="ml-10">Replies</span>
                 </li>
               </ul>
-              <div data-tab-content="" className="p-5">
-                <div
-                  className={`block ${
-                    activeTab === "Threads" ? "opacity-100" : "hidden opacity-0"
-                  }`}
-                  id="Threads"
-                  role="tabpanel"
-                >
+              <div>
+                <div className={`${activeTab === "Threads" ? "block" : "hidden"}`}>
                   {threads.length > 0 ? (
                     threads.map((thread) => (
                       <PostCard
                         key={thread._id}
-                        threadId = {thread._id}
+                        threadId={thread._id}
                         description={thread.description}
                         tag={thread.tag}
                         images={thread.images}
                         owner={thread.ownerId}
+                        videos={thread.videos}
                       />
                     ))
                   ) : (
                     <p>No threads available.</p>
                   )}
                 </div>
-                <div
-                  className={`block ${
-                    activeTab === "Replies" ? "opacity-100" : "hidden opacity-0"
-                  }`}
-                  id="Replies"
-                  role="tabpanel"
-                >
-                  <p className="block font-sans text-base antialiased font-light leading-relaxed text-inherit text-blue-gray-500">
+                <div className={`${activeTab === "Replies" ? "block" : "hidden"}`}>
+                  <p className="font-sans text-base font-light text-gray-500">
                     All Replies are here
                   </p>
                 </div>

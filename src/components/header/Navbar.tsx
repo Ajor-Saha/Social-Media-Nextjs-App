@@ -85,7 +85,7 @@ function Navbar() {
           </ul>
         </div>
       </div>
-      <div className="navbar-center lg:gap-10">
+      <div className="navbar-center lg:gap-12">
         <Link href="/" className="btn btn-ghost text-xl">
           <GrHomeRounded />
         </Link>

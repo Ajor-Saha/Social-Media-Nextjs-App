@@ -5,18 +5,20 @@ import { BsHeart } from 'react-icons/bs'
 import { FaRegComment } from 'react-icons/fa'
 import { GoShareAndroid } from 'react-icons/go'
 
-function CommunityThreadCard() {
+function CommunityThreadCard({thread}) {
   return (
     <div className="md:w-96 w-80 lg:w-[500px] rounded overflow-hidden p-2 my-2">
       <div className="flex flex-row justify-between items-start gap-3">
         <div className="flex items-center">
           <div className="avatar mt-3 px-2">
             <div className="w-12 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
-              <img
-                src={
+              <Image
+                src={thread?.ownerId.avatar ||
                   "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                 }
                 alt="Avatar"
+                width={300}
+                height={150}
               />
             </div>
           </div>
@@ -24,7 +26,7 @@ function CommunityThreadCard() {
             <Link
               href="/"
             >
-              <h3 className="font-semibold text-xl">ajordev</h3>
+              <h3 className="font-semibold text-xl">{thread.ownerId?.username}</h3>
             </Link>
             <p className="font-semibold text-gray-500">1d</p>
           </div>
@@ -46,25 +48,35 @@ function CommunityThreadCard() {
         </button>
       </div>
 
-      <div className="px-6 py-4">
-        <div className="font-semibold text-xl mb-2">This is so good. This is good bro..</div>
+      <div className="px-6 pt-2">
+        <div className="font-semibold text-xl mb-2">{thread.description}</div>
       </div>
       <div className="px-6 pt-4 pb-2">
-        <a className="link link-primary mr-2">#bdvsaus</a>
+        <a className="link link-primary mr-2">#{thread.tag?.name}</a>
       </div>
-      <div className="carousel carousel-center max-w-md px-1 py-2 space-x-4 bg-neutral rounded-box">
-        
-          <div  className="carousel-item">
+      <div className="w-72 md:w-96 carousel  max-w-md px-1 py-1 space-x-2 lg:space-x-1 bg-neutral">
+      {thread.images && thread.images.length > 0 && thread.images.map((image, index) => (
+          <div key={index} className="carousel-item w-full">
             <Image
-              src="https://images.pexels.com/photos/3778684/pexels-photo-3778684.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
-              alt='pic'
-              width={350}
+              src={image}
+              alt={`Image ${index + 1}`}
+              width={400}
               height={200}
               className="rounded-box cursor-pointer"
-              
             />
           </div>
-        
+        ))}
+        {thread.videos && thread.videos.length > 0 && thread.videos.map((video, index) => (
+          <div key={index} className="carousel-item w-full">
+            <video
+              src={video}
+              controls
+              width={400}
+              height={200}
+              className="rounded-box cursor-pointer"
+            />
+          </div>
+        ))}
       </div>
       <div className="pt-4 flex flex-row gap-5">
         <div className="flex">
@@ -73,7 +85,7 @@ function CommunityThreadCard() {
               size={20}
               className={`"text-red-500 font-bold"`}
             />
-            <span>5</span>
+            <span>{thread.likes}</span>
           </button>
         </div>
         <button>

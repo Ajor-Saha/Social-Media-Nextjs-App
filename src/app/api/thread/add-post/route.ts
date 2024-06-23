@@ -15,7 +15,8 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const description = formData.get("description") as string;
-    const files = formData.getAll("images") as File[];
+    const imageFiles = formData.getAll("images") as File[];
+    const videoFiles = formData.getAll("videos") as File[];
     const tag = formData.get("tag") as string;
 
     const session = await getServerSession(authOptions);
@@ -50,28 +51,35 @@ export async function POST(req: Request) {
     }
     const tagId = tagDocument._id as mongoose.Types.ObjectId;
 
-    // Upload images to Cloudinary
-    const uploadPromises = files.map(async (file) => {
-      const fileBuffer = await file.arrayBuffer();
-      const mimeType = file.type;
-      const encoding = "base64";
-      const base64Data = Buffer.from(fileBuffer).toString("base64");
-      const fileUri = "data:" + mimeType + ";" + encoding + "," + base64Data;
+    // Helper function to upload files to Cloudinary
+    const uploadFiles = async (files: File[]) => {
+      const uploadPromises = files.map(async (file) => {
+        const fileBuffer = await file.arrayBuffer();
+        const mimeType = file.type;
+        const encoding = "base64";
+        const base64Data = Buffer.from(fileBuffer).toString("base64");
+        const fileUri = `data:${mimeType};${encoding},${base64Data}`;
 
-      return await uploadToCloudinary(fileUri, file.name);
-    });
+        return await uploadToCloudinary(fileUri, file.name);
+      });
 
-    const uploadResults = await Promise.all(uploadPromises);
+      const uploadResults = await Promise.all(uploadPromises);
 
-    const imageUrls = uploadResults
-      .filter((res): res is { success: true; result: UploadApiResponse } => res.success)
-      .map((res) => res.result.secure_url);
+      return uploadResults
+        .filter((res): res is { success: true; result: UploadApiResponse } => res.success)
+        .map((res) => res.result.secure_url);
+    };
+
+    // Upload images and videos to Cloudinary
+    const imageUrls = await uploadFiles(imageFiles);
+    const videoUrls = await uploadFiles(videoFiles);
 
     // Create new thread
     const newThread = new ThreadModel({
       ownerId,
       description,
       images: imageUrls,
+      videos: videoUrls,
       tag: tagId,
       isPublished: true,
     });
