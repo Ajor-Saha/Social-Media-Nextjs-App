@@ -1,3 +1,5 @@
+import { User } from 'next-auth';
+import { useSession } from 'next-auth/react';
 import Image from 'next/image'
 import React from 'react'
 
@@ -10,6 +12,10 @@ interface UserCardProps {
 
 
 function UserCard({ userId, username, avatar, followers }: UserCardProps) {
+
+  const { data: session } = useSession();
+  const user: User = session?.user;
+
   return (
     <div className="flex items-center justify-between p-4 rounded border-b border-gray-600">
       <div className="flex items-center">
@@ -27,7 +33,9 @@ function UserCard({ userId, username, avatar, followers }: UserCardProps) {
         </div>
       </div>
       
-      <button className="border border-gray-600 px-5 rounded-lg py-1 text-sm font-semibold">Follow</button>
+      <button className="border border-gray-600 px-5 rounded-lg py-1 text-sm font-semibold">
+        {user?._id === userId ? "You" : "Follow"}
+        </button>
     </div>
   )
 }

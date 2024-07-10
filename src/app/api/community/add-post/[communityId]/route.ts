@@ -140,14 +140,13 @@ export async function GET(
   try {
     const communityId = params.communityId;
 
-    // Parse query parameters for pagination
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page") || "1", 10);
-    const limit = 9;
+    const limit = 3;  // Fetch 3 posts per page
     const skip = (page - 1) * limit;
 
     // Fetch the community by ID
-    const community = await CommunityModel.findById({ _id:communityId });
+    const community = await CommunityModel.findById(communityId);
     //console.log(community);
     
     if (!community) {
@@ -161,7 +160,7 @@ export async function GET(
     }
 
     // Fetch threads with pagination and sorting
-    const threads = await CommunityModel.findById({ _id: communityId })
+    const threads = await CommunityModel.findById(communityId)
       .select("threads")
       .populate({
         path: "threads",

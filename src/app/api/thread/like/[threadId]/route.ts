@@ -5,6 +5,7 @@ import UserModel from "@/model/User";
 import ThreadModel from "@/model/Thread";
 import LikeModel from "@/model/Like";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
+import CommunityModel from "@/model/Community";
 
 export async function POST(
   request: Request,
@@ -39,6 +40,33 @@ export async function POST(
       );
     }
 
+    const url = new URL(request.url);
+    const communityId = url.searchParams.get("communityId");
+
+    if (communityId) {
+      const community = await CommunityModel.findById(communityId);
+
+      if (!community) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message: "Community does not exist",
+          }),
+          { status: 404 }
+        );
+      }
+
+      if (!community.members.includes(userId)) {
+        return new Response(
+          JSON.stringify({
+            success: false,
+            message: "User is not a member of this community",
+          }),
+          { status: 403 }
+        );
+      }
+    }
+
     // Check if thread exists
     const thread = await ThreadModel.findById({ _id: threadId });
     if (!thread) {
@@ -59,6 +87,7 @@ export async function POST(
     if (existingLike) {
       // Delete the existing like
       await LikeModel.deleteOne({ _id: existingLike._id });
+      thread.likes -= 1; 
 
       return new Response(
         JSON.stringify({
@@ -67,6 +96,8 @@ export async function POST(
         }),
         { status: 200 }
       );
+    } else {
+      thread.likes += 1;
     }
 
     // Create a new like
@@ -75,6 +106,8 @@ export async function POST(
       thread: threadId,
     });
 
+    
+    await thread.save();
     await newLike.save();
 
     return new Response(

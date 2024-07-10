@@ -167,7 +167,7 @@ const ThreadCard = () => {
             <div className="px-10 py-10">
               <div className="flex items-center mb-4">
                 <GiSuspicious size={40} />
-                <span className="ml-4 font-semibold">{user.username}</span>
+                <span className="ml-4 font-semibold">{user?.username}</span>
               </div>
               <form onSubmit={handleSubmit(onSubmit)}>
                 <textarea

@@ -208,7 +208,7 @@ const PostCard: React.FC<CardProps> = ({
               <li className="flex">
                 <a>save</a>
               </li>
-              <li className={user.username === owner.username ? "block" : "hidden"}>
+              <li className={user?.username === owner?.username ? "block" : "hidden"}>
                 <Link href={`postEdit/${threadId}`}>Edit</Link>
               </li>
               <li>

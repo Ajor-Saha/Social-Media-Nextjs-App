@@ -41,7 +41,7 @@ function UserCommunityPage() {
   const [images, setImages] = useState<File[]>([]);
   const [videos, setVideos] = useState<File[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
+  const [pageSize] = useState(3);
   const [buttonChange, setButtonChange] = useState("home");
   const [loading, setLoading] = useState(false);
 
@@ -102,19 +102,20 @@ function UserCommunityPage() {
   const fetchCommunityThreads = useCallback(
     async (page = 1) => {
       try {
-        const response = await axios.get<any>(
+        const response = await axios.get(
           `/api/community/add-post/${communityId}?page=${page}`
         );
         if (response.data.success) {
-          setThreads((prevThreads) => [...prevThreads, ...response.data.data]);
-          setHasMore(response.data.data.length > 0);
+          setThreads(response.data.data);
+          setCurrentPage(page);
         } else {
           toast.error(response.data.message);
         }
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>;
         let errorMessage =
-          axiosError.response?.data.message ?? "Error while fetching threads";
+          axiosError.response?.data.message ??
+          "Error while fetching community details";
         toast.error(errorMessage);
       }
     },
@@ -193,6 +194,7 @@ function UserCommunityPage() {
       } else {
         toast.error(response.data.message);
       }
+      fetchCommunityThreads();
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
       toast.error(axiosError.response?.data.message ?? "Error creating post");
@@ -218,6 +220,13 @@ function UserCommunityPage() {
     fetchCommunityThreads(nextPage);
     setCurrentPage(nextPage);
   };
+
+  const handlePaginationClick = (page: number) => {
+    fetchCommunityThreads(page);
+  };
+
+  
+  
 
   const isAdmin = user && community.admin?.includes(user._id);
 
@@ -337,8 +346,8 @@ function UserCommunityPage() {
                   </button>
 
                   <div className="carousel h-[270px] rounded-box w-[400px] md:w-[450px] lg:w-[500px] ml-4 border-x p-2 mt-10">
-                    {members.admins?.map((user: any) => (
-                      <div className="carousel-item w-1/2" key={user._id}>
+                    {members.admins?.map((member: any) => (
+                      <div className="carousel-item w-1/2" key={member._id}>
                         <div className="flex flex-col mx-auto pt-5">
                           <div className="avatar">
                             <div className="w-24 rounded-full">
@@ -347,22 +356,22 @@ function UserCommunityPage() {
                                 height={24}
                                 alt="pic"
                                 src={
-                                  user?.avatar ||
+                                  member?.avatar ||
                                   "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                                 }
                               />
                             </div>
                           </div>
-                          <h1 className="font-bold mt-1">{user.username}</h1>
-                          <p>{user.followers?.length} followers</p>
+                          <h1 className="font-bold mt-1">{member?.username}</h1>
+                          <p>{member?.followers?.length} followers</p>
                           <p>admin</p>
-                          <button className="btn mt-3 outline">Follow</button>
+                          <button className="btn mt-3 outline">{member?._id === user?._id ? "You" : "Follow"}</button>
                         </div>
                       </div>
                     ))}
 
-                    {members.members?.map((user: any) => (
-                      <div className="carousel-item w-1/2" key={user._id}>
+                    {members.members?.map((member: any) => (
+                      <div className="carousel-item w-1/2" key={member._id}>
                         <div className="flex flex-col mx-auto pt-5">
                           <div className="avatar">
                             <div className="w-24 rounded-full">
@@ -371,16 +380,16 @@ function UserCommunityPage() {
                                 height={24}
                                 alt="pic"
                                 src={
-                                  user?.avatar ||
+                                  member?.avatar ||
                                   "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                                 }
                               />
                             </div>
                           </div>
-                          <h1 className="font-bold mt-1">{user.username}</h1>
+                          <h1 className="font-bold mt-1">{member?.username}</h1>
                           <p>member</p>
-                          <p>{user.followers?.length} followers</p>
-                          <button className="btn mt-3 outline">Follow</button>
+                          <p>{member.followers?.length} followers</p>
+                          <button className="btn mt-3 outline">{member?._id === user?._id ? "You" : "Follow"}</button>
                         </div>
                       </div>
                     ))}
@@ -394,27 +403,38 @@ function UserCommunityPage() {
               </div>
             )}
             {activeTab === "post" && (
-              <div className="card w-[350px] flex flex-col justify-center items-center border-y border-gray-500 p-4 sm:w-[450px] md:w-[650px] lg:w-[750px]  md:ml-24 bg-base-100 shadow-xl">
-                {threads.length > 0 ? (
-                  <>
-                    {threads.map((thread) => (
-                      <CommunityThreadCard key={thread.id} thread={thread} />
-                    ))}
-                    {hasMore && (
-                      <div className="flex justify-center mt-4">
-                        <button
-                          onClick={handleLoadMore}
-                          className="btn btn-primary"
-                        >
-                          Load More
-                        </button>
-                      </div>
-                    )}
-                  </>
+              <>
+                {threads.length === 0 ? (
+                  <div className="py-8 text-center text-gray-600">
+                    No posts available.
+                  </div>
                 ) : (
-                  <p>No posts available</p>
+                  <div className="card w-[350px] overflow-y-auto border-y border-gray-500 p-4 sm:w-[450px] md:w-[650px] lg:w-[750px] md:ml-24 bg-base-100 shadow-xl flex flex-col justify-center items-center pb-12">
+                    {threads.map((thread) => (
+                      <CommunityThreadCard key={thread._id} thread={thread} communityId={community?._id} />
+                    ))}
+                    <div className="flex justify-between items-center mt-4">
+                  <div className="join grid grid-cols-2">
+                    <button
+                      className="join-item btn btn-outline"
+                      onClick={() => handlePaginationClick(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    >
+                      Previous page
+                    </button>
+                    <button
+                      className="join-item btn btn-outline"
+                      onClick={() => handlePaginationClick(currentPage + 1)}
+                      disabled={threads.length < pageSize}
+                    >
+                      Next
+                    </button>
+                  </div>
+                </div>
+                  </div>
                 )}
-              </div>
+                
+              </>
             )}
             {activeTab === "user" && (
               <div className="card  overflow-y-auto w-[350px] border-y border-gray-500 p-4 sm:w-[450px] md:w-[650px] lg:w-[750px] h-[570px] lg:h-[600px] md:ml-24 bg-base-100 shadow-xl">
@@ -443,7 +463,7 @@ function UserCommunityPage() {
       )}
       {buttonChange === "edit" && <EditCommunity community={community} />}
       {isAdmin && buttonChange === "admin" ? (
-        <AdminCommunity />
+        <AdminCommunity  community={community}/>
       ) : (
         buttonChange === "admin" && (
           <div className="flex flex-col items-center pt-20 mx-auto w-full font-extrabold text-lg">
@@ -492,13 +512,12 @@ function UserCommunityPage() {
                     />
                     <div className="mt-2 w-full">
                       {images.map((image, index) => (
-                        <div key={index} className="relative">
+                        <div key={index} className="relative w-20 h-20">
                           <Image
                             src={URL.createObjectURL(image)}
                             alt="Selected Image"
-                            width={300}
-                            height={300}
-                            className="m-1 rounded-md w-52 h-52"
+                            layout="fill"
+                            className="rounded"
                           />
                         </div>
                       ))}
@@ -516,15 +535,13 @@ function UserCommunityPage() {
                       accept="video/*"
                       onChange={(e) => handleFileChange(e, "videos")}
                     />
-                    <div className="mt-2">
+                    <div className="mt-2 flex-wrap space-x-2">
                       {videos.map((video, index) => (
-                        <div key={index} className="relative">
+                        <div key={index} className="relative w-32 h-20">
                           <video
                             src={URL.createObjectURL(video)}
                             controls
-                            width={300}
-                            height={300}
-                            className="m-1 rounded-md h-52 w-96"
+                            className="rounded w-full h-full object-cover"
                           />
                         </div>
                       ))}
