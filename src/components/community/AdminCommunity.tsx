@@ -191,8 +191,29 @@ const AdminCommunity: React.FC<AdminCommunityProps> = ({ community }) => {
           <>
           {threads.length === 0 ? (
             <div className="py-8 text-center text-gray-600">
-              No posts available.
+              <div>
+                No posts available
+              </div>
+              <div className="flex justify-center items-center mt-4">
+                <div className="join grid grid-cols-2">
+                  <button
+                    className="join-item btn btn-outline"
+                    onClick={() => handlePaginationClick(currentPage - 1)}
+                    disabled={currentPage === 1}
+                  >
+                    Previous page
+                  </button>
+                  <button
+                    className="join-item btn btn-outline"
+                    onClick={() => handlePaginationClick(currentPage + 1)}
+                    disabled={threads.length < pageSize}
+                  >
+                    Next
+                  </button>
+                </div>
+              </div>
             </div>
+
           ) : (
             <div className="overflow-y-auto  border-gray-500 p-4 w-full   bg-base-100  flex flex-col justify-center items-center pb-12">
               {threads.map((thread) => (
@@ -200,6 +221,7 @@ const AdminCommunity: React.FC<AdminCommunityProps> = ({ community }) => {
                   key={thread._id}
                   post={thread}
                   communityId={community._id}
+                  refetchPosts={() => fetchCommunityThreads(currentPage)}
                 />
               ))}
               <div className="flex justify-between items-center mt-4">

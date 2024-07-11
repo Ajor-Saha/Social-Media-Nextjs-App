@@ -151,17 +151,17 @@ function UserDashboard() {
           <div className="avatar-group -space-x-6 rtl:space-x-reverse">
             <div className="avatar">
               <div className="w-12">
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                <Image alt="pic" height={200} width={300} src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
               </div>
             </div>
             <div className="avatar">
               <div className="w-12">
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+              <Image alt="pic" height={200} width={300} src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
               </div>
             </div>
             <div className="avatar">
               <div className="w-12">
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+              <Image alt="pic" height={200} width={300} src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
               </div>
             </div>
             <span className="px-7 mt-5 text-sm font-sans">5 followers</span>
@@ -177,9 +177,9 @@ function UserDashboard() {
               Edit
             </button>
           </div>
-          <div className="mx-auto mt-5 flex flex-col justify-center items-center">
+          <div className="mx-auto  mt-5 flex flex-col justify-center items-center">
             <div className="relative right-0">
-              <ul className="flex space-x-4 mb-4 border-b-2 border-gray-200 justify-between">
+              <ul className="flex space-x-4  mb-4 border-b-2  border-gray-200 justify-between">
                 <li className={`cursor-pointer w-40 md:w-52 pb-2 ${activeTab === "Threads" ? "border-b-2 border-gray-700 text-blue-500" : ""}`} onClick={() => handleTabChange("Threads")}>
                   <span className="ml-20">Posts</span>
                 </li>
@@ -199,6 +199,7 @@ function UserDashboard() {
                         images={thread.images}
                         owner={thread.ownerId}
                         videos={thread.videos}
+                        comments={thread.comments}
                       />
                     ))
                   ) : (

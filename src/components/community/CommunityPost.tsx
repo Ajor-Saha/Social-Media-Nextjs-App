@@ -1,11 +1,16 @@
+"use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { FaTrash, FaRegThumbsUp, FaRegComment } from "react-icons/fa";
-
+import { AiOutlineClose } from "react-icons/ai";
+import axios from "axios";
+import { ApiResponse } from "@/types/ApiResponse";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 // Demo data
 interface CommunityPostProps {
-  communityId : string;
+  communityId: string;
   post: {
     _id: string;
     ownerId: {
@@ -21,20 +26,63 @@ interface CommunityPostProps {
     createdAt: string;
     updatedAt: string;
   };
+  refetchPosts: () => void;
 }
 
-const CommunityPost: React.FC<CommunityPostProps> = ({ post }) => {
+const CommunityPost: React.FC<CommunityPostProps> = ({ post, communityId, refetchPosts }) => {
+  const [openModal, setOpenModel] = useState(false);
   
-  
-  
-  
+  const handleModel = () => {
+    setOpenModel(!openModal);
+  };
+
+  const deletePost = async () => {
+    try {
+      const response = await axios.delete<ApiResponse>(
+        `/api/community/post/${post._id}`,
+        { data : {communityId}}
+      );
+      if (response.data.success) {
+        setOpenModel(false);
+        refetchPosts();
+        toast.success("Post deleted successfully");
+      } else {
+        toast.error("Failed to delete post");
+      }
+    } catch (error) {
+      toast.error("Error deleting post");
+    } finally {
+      setOpenModel(false);
+    }
+    
+  };
+
   return (
     <div className="border flex-col bg-base-300 mt-5 p-4 relative flex md:flex-row rounded-xl">
       {/* Delete icon */}
-      <button className="absolute top-2 right-2 text-red-600">
+      <button className="absolute top-2 right-2 text-red-600" onClick={handleModel}>
         <FaTrash size={20} />
       </button>
-
+      {openModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 overflow-y-auto">
+          <div className="card card-side bg-base-100 shadow-xl w-[300px] md:w-[400px] lg:w-[500px] ">
+            <div className="card-body">
+              <button
+                className="absolute top-2 right-2 rounded-full p-1"
+                onClick={() => setOpenModel(false)}
+              >
+                <AiOutlineClose size={24} />
+              </button>
+              <h2 className="card-title">
+                Delete this post?
+              </h2>
+              <div className="card-actions justify-end">
+                <button className="btn btn-warning" onClick={deletePost} >Delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
       {/* Carousel */}
 
       <div className="md:w-1/3 w-full  carousel rounded-box h-56 lg:h-60  py-8 md:py-0">
@@ -91,6 +139,7 @@ const CommunityPost: React.FC<CommunityPostProps> = ({ post }) => {
           </button>
         </div>
       </div>
+      <ToastContainer />
     </div>
   );
 };

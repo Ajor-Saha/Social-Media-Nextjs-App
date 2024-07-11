@@ -100,6 +100,7 @@ function TagName() {
                   images={thread.images}
                   owner={thread.ownerId}
                   videos={thread.videos}
+                  comments={thread.comments}
                 />
               ))}
             </div>

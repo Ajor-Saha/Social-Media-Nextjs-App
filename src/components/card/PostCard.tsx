@@ -36,6 +36,7 @@ interface CardProps {
   images: string[];
   videos: string[];
   owner: owner;
+  comments: number;
 }
 
 interface Comment {
@@ -50,6 +51,7 @@ const PostCard: React.FC<CardProps> = ({
   images,
   owner,
   videos,
+  comments
 }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState<number>(0);
@@ -134,8 +136,10 @@ const PostCard: React.FC<CardProps> = ({
   }, [threadId]);
 
   useEffect(() => {
-    fetchLikeCount();
-  }, [fetchLikeCount]);
+    if (threadId) {
+      fetchLikeCount();
+    }
+  }, [threadId,fetchLikeCount]);
 
   const openFullScreen = (image: string) => {
     setSelectedImage(image);
@@ -163,7 +167,11 @@ const PostCard: React.FC<CardProps> = ({
   };
 
 
-  
+  const handleShare = () => {
+    const link = `http://localhost:3000/post/${threadId}`;
+    navigator.clipboard.writeText(link);
+    toast.success("Link copied to clipboard!");
+  };
   
 
   return (
@@ -188,10 +196,10 @@ const PostCard: React.FC<CardProps> = ({
               href={
                 user?.username === owner?.username
                   ? "/dashboard"
-                  : `/profile/${owner.username}`
+                  : `/profile/${owner?.username}`
               }
             >
-              <h3 className="font-semibold text-xl">{owner.username}</h3>
+              <h3 className="font-semibold text-xl">{owner?.username}</h3>
             </Link>
             <p className="font-semibold text-gray-500">1d</p>
           </div>
@@ -215,7 +223,7 @@ const PostCard: React.FC<CardProps> = ({
                 <a>Follow</a>
               </li>
               <li>
-                <a>Copy link</a>
+                <a onClick={handleShare}>Copy link</a>
               </li>
             </ul>
           </div>
@@ -226,10 +234,10 @@ const PostCard: React.FC<CardProps> = ({
         <div className="font-semibold">{description}</div>
       </div>
       <div className="px-6  pb-5">
-        <Link href={`search/tag/${tag?.name}`} className="link link-primary mr-2">#{tag.name}</Link>
+        <Link href={`search/tag/${tag?.name}`} className="link link-primary mr-2">#{tag?.name}</Link>
       </div>
       <div className="carousel w-full">
-        {images.map((image, index) => (
+        {images?.map((image, index) => (
           <div key={index} className="carousel-item mr-2">
             <Image
               src={image}
@@ -263,10 +271,11 @@ const PostCard: React.FC<CardProps> = ({
             <span>{likeCount}</span>
           </button>
         </div>
-        <button onClick={openModal}>
+        <button onClick={openModal} className="flex mt-3">
           <FaRegComment size={20} />
+          <span className="px-2">{comments}</span>
         </button>
-        <button>
+        <button onClick={handleShare}>
           <GoShareAndroid size={20} />
         </button>
       </div>

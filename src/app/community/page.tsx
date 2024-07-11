@@ -15,6 +15,7 @@ import { ApiResponse } from "@/types/ApiResponse";
 import Image from "next/image";
 import FollowComunityCard from "@/components/card/FollowComunityCard";
 
+
 const CommunityPage = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [imageUrl, setImageUrl] = useState<string | null>(null);
@@ -23,6 +24,8 @@ const CommunityPage = () => {
   const [communities, setCommunities] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
+  const [isTop, setIsTop] = useState(true);
+
 
   const {
     handleSubmit,
@@ -92,7 +95,7 @@ const CommunityPage = () => {
     }
   };
 
-  const fetchCommunities = async (page: number) => {
+  const fetchRecentCommunities = async (page: number) => {
     setLoading(true);
     try {
       const response = await axios.get(`/api/community?page=${page}`);
@@ -111,6 +114,35 @@ const CommunityPage = () => {
     }
   };
 
+  const fetchTopCommunities = async (page: number) => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/api/community/top-community?page=${page}`);
+      if (response.data.success) {
+        setCommunities(response.data.communities);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      let errorMessage =
+        axiosError.response?.data.message ?? "Error while fetching communities";
+      toast.error(errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  useEffect(() => {
+    if (isTop) {
+      fetchTopCommunities(page);
+    } else {
+      fetchRecentCommunities(page);
+    }
+  }, [page, isTop]);
+
+
   //console.log(communities);
 
   return (
@@ -119,10 +151,27 @@ const CommunityPage = () => {
       <div className="card md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl border-x">
         <div className="card-body">
           <div className="flex gap-5 justify-center items-center">
-            <button className="btn btn-neutral md:px-20 px-16">Top</button>
             <button
-              onClick={() => fetchCommunities(1)}
-              className="btn btn-neutral md:px-20 px-16"
+              onClick={() => {
+                setIsTop(true);
+                setPage(1); // Reset to first page
+                fetchTopCommunities(1);
+              }}
+              className={`btn  md:px-20 px-16 ${
+                isTop ? "btn-neutral" : "btn-outline"
+              }`}
+            >
+              Top
+            </button>
+            <button
+              onClick={() => {
+                setIsTop(false);
+                setPage(1); // Reset to first page
+                fetchRecentCommunities(1);
+              }}
+              className={`btn md:px-20 px-16 ${
+                !isTop ? "btn-neutral" : "btn-outline"
+              }`}
             >
               Recent
             </button>
@@ -146,6 +195,21 @@ const CommunityPage = () => {
                 />
               ))
             )}
+          </div>
+          <div className="join grid grid-cols-2 mt-4 mx-auto w-10/12">
+            <button
+              className="join-item btn btn-outline"
+              disabled={page <= 1}
+              onClick={() => setPage(page - 1)}
+            >
+              Previous page
+            </button>
+            <button
+              className="join-item btn btn-outline"
+              onClick={() => setPage(page + 1)}
+            >
+              Next
+            </button>
           </div>
         </div>
       </div>

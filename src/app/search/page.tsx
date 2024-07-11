@@ -1,7 +1,10 @@
 "use client";
 
 import FollowCard from "@/components/card/FollowCard";
-import React, { useEffect, useState } from "react";
+import SearchCard from "@/components/card/SearchCard";
+import { ApiResponse } from "@/types/ApiResponse";
+import axios from "axios";
+import React, { useCallback, useEffect, useState } from "react";
 
 interface User {
   _id: string;
@@ -11,37 +14,93 @@ interface User {
   avatar: string;
 }
 
+interface SearchResult {
+  success: boolean;
+  users: User[];
+  tags: any[];
+  communities: any[];
+  message: string;
+}
 
 function SearchPage() {
   const [users, setUsers] = useState<User[]>([]);
+  const [searchResult, setSearchResult] = useState<SearchResult>({
+    success: false,
+    users: [],
+    tags: [],
+    communities: [],
+    message: "",
+  });
   const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
+  const [searchText, setSearchText] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
 
-  const fetchUsers = async (page: number) => {
+  // Fetch default users
+  const fetchUsers = useCallback(async () => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/user/all-users?page=${page}`);
-      const data = await response.json();
-      if (data.success) {
-        setUsers(data.users);
+      const response = await axios.get<any>("/api/user/all-users");
+      if (response.data.success) {
+        setUsers(response.data.users);
+      } else {
+        console.error(response.data.message);
       }
     } catch (error) {
       console.error("Error fetching users:", error);
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // Fetch search results
+  const fetchSearchResults = useCallback(async (text: string) => {
+    setLoading(true);
+    try {
+      const response = await axios.post<SearchResult>("/api/search", {
+        searchText: text,
+      });
+      if (response.data.success) {
+        setSearchResult(response.data);
+        setUsers(response.data.users); // Update users with search results
+      } else {
+        console.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  // Handle search input change
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const text = e.target.value;
+    setSearchText(text);
+    setIsSearching(text.length > 0); // Set search mode based on input length
   };
 
+  // Fetch users or search results based on search text
   useEffect(() => {
-    fetchUsers(page);
-  }, [page]);
+    if (searchText.length > 0) {
+      fetchSearchResults(searchText);
+    } else {
+      fetchUsers(); // Fetch default users when search text is cleared
+    }
+  }, [searchText, fetchSearchResults, fetchUsers]);
+  
 
   return (
     <div className="py-20 flex flex-col justify-center items-center">
       <div className="card md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl border-x">
         <div className="card-body">
           <label className="input input-bordered flex items-center gap-2">
-            <input type="text" className="grow" placeholder="Search" />
+            <input
+              type="text"
+              className="grow"
+              placeholder="Search"
+              value={searchText}
+              onChange={handleSearchChange}
+            />
             <svg
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 16 16"
@@ -64,33 +123,26 @@ function SearchPage() {
                 <span className="loading loading-bars loading-lg"></span>
               </div>
             ) : (
-              users.map((user) => (
-                <FollowCard
-                  key={user._id}
-                  username={user.username}
-                  fullName={user.fullName}
-                  followers={user.followers}
-                  avatar={user.avatar}
-                />
-              ))
+              isSearching ? (
+                <SearchCard searchResult={searchResult} />
+              ) : (
+                users.length > 0 ? (
+                  users.map((user) => (
+                    <FollowCard
+                      key={user._id}
+                      username={user.username}
+                      fullName={user.fullName}
+                      followers={user.followers}
+                      avatar={user.avatar}
+                    />
+                  ))
+                ) : (
+                  <p>No users found</p>
+                )
+              )
             )}
           </div>
         </div>
-      </div>
-      <div className="flex justify-between mt-4 gap-5">
-        <button
-          className="btn btn-outline btn-info"
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
-        >
-          Previous
-        </button>
-        <button
-          className="btn btn-outline btn-info"
-          onClick={() => setPage((prev) => prev + 1)}
-        >
-          Next
-        </button>
       </div>
     </div>
   );
