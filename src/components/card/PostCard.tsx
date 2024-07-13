@@ -15,7 +15,6 @@ import Link from "next/link";
 import { AiOutlineClose } from "react-icons/ai"; // Import close icon
 import CommentCard from "./CommentCard";
 import { BsThreeDots } from "react-icons/bs";
-import { BsSave2 } from "react-icons/bs";
 
 
 interface Tag {
@@ -135,6 +134,23 @@ const PostCard: React.FC<CardProps> = ({
     }
   }, [threadId]);
 
+
+  const handleSave = async () => {
+    try {
+      const response = await axios.post<ApiResponse>(
+        `/api/thread/save-post/${threadId}`
+      );
+      if (response.data.success) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(axiosError.response?.data.message ?? "Error saving post");
+    }
+  };
+
   useEffect(() => {
     if (threadId) {
       fetchLikeCount();
@@ -172,7 +188,7 @@ const PostCard: React.FC<CardProps> = ({
     navigator.clipboard.writeText(link);
     toast.success("Link copied to clipboard!");
   };
-  
+ 
 
   return (
     <div className="md:w-96 w-80 lg:w-[500px] rounded overflow-hidden p-2 my-2">
@@ -214,7 +230,7 @@ const PostCard: React.FC<CardProps> = ({
               className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li className="flex">
-                <a>save</a>
+                <a onClick={handleSave}>save</a>
               </li>
               <li className={user?.username === owner?.username ? "block" : "hidden"}>
                 <Link href={`postEdit/${threadId}`}>Edit</Link>

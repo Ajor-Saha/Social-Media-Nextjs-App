@@ -15,9 +15,9 @@ export async function PUT(request: Request) {
         { success: false, message: "Not authenticated" }
       ), { status: 401 });
     }
-  
+ 
     const userId = new mongoose.Types.ObjectId(_user._id);
-    const { fullName, bio } = await request.json();
+    const { fullName, bio, username } = await request.json();
   
     if (!fullName && !bio) {
       return new Response(JSON.stringify(
@@ -29,6 +29,7 @@ export async function PUT(request: Request) {
       const updateData: any = {};
       if (fullName) updateData.fullName = fullName;
       if (bio) updateData.bio = bio;
+      if(username) updateData.username = username;
   
       const updatedUser = await UserModel.findByIdAndUpdate(
         { _id: userId },
@@ -52,4 +53,4 @@ export async function PUT(request: Request) {
         { message: "Internal server error", success: false }
       ), { status: 500 });
     }
-  }
+}

@@ -219,7 +219,7 @@ function SignUpForm() {
               >
                 {isSubmitting ? (
                   <button className="btn">
-                    <span className="loading loading-spinner"></span>
+                    <span className="loading loading-spinner">Please wait</span>
                     loading
                   </button>
                 ) : (

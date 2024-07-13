@@ -22,8 +22,14 @@ function UserDashboard() {
   const [activeTab, setActiveTab] = useState("Threads");
   const [showModal, setShowModal] = useState(false);
 
-  const [userDetails, setUserDetails] = useState<any>({ fullName: "", avatar: "" });
+  const [userDetails, setUserDetails] = useState<any>({
+    fullName: "",
+    avatar: "",
+  });
   const [threads, setThreads] = useState<any[]>([]); // State to store threads
+  const [userReplies, setUserReplies] = useState<any[]>([]);
+  const [loadingThreads, setLoadingThreads] = useState<boolean>(true);
+  const [loadingReplies, setLoadingReplies] = useState<boolean>(true);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -39,15 +45,20 @@ function UserDashboard() {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      let errorMessage = axiosError.response?.data.message ?? "Error while fetching user details";
+      let errorMessage =
+        axiosError.response?.data.message ??
+        "Error while fetching user details";
       toast.error(errorMessage);
     }
   }, []);
 
   const fetchUserThreads = useCallback(async () => {
-    if (!userDetails._id) return; // Ensure userDetails are fetched
+    if (!userDetails._id) return;
+    setLoadingThreads(true);
     try {
-      const response = await axios.get<any>(`/api/thread/user-posts/${userDetails._id}`);
+      const response = await axios.get<any>(
+        `/api/thread/user-posts/${userDetails._id}`
+      );
       if (response.data.success) {
         setThreads(response.data.threads);
       } else {
@@ -55,10 +66,36 @@ function UserDashboard() {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      let errorMessage = axiosError.response?.data.message ?? "Error while fetching user threads";
+      let errorMessage =
+        axiosError.response?.data.message ??
+        "Error while fetching user threads";
       toast.error(errorMessage);
+    } finally {
+      setLoadingThreads(false);
     }
   }, [userDetails._id]);
+
+  const fetchUserReplies = useCallback(async () => {
+    setLoadingReplies(true);
+    try {
+      const response = await axios.get<any>(
+        `/api/thread/reply/${userDetails?._id}`
+      );
+      if (response.data.success) {
+        setUserReplies(response.data.data);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      let errorMessage =
+        axiosError.response?.data.message ??
+        "Error while fetching user details";
+      toast.error(errorMessage);
+    } finally {
+      setLoadingReplies(false);
+    }
+  }, [userDetails?._id]);
 
   useEffect(() => {
     if (session) {
@@ -69,8 +106,9 @@ function UserDashboard() {
   useEffect(() => {
     if (userDetails._id) {
       fetchUserThreads();
+      fetchUserReplies();
     }
-  }, [userDetails._id, fetchUserThreads]);
+  }, [userDetails._id, fetchUserThreads, fetchUserReplies]);
 
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -88,22 +126,29 @@ function UserDashboard() {
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      let errorMessage = axiosError.response?.data.message ?? "Error updating user details";
+      let errorMessage =
+        axiosError.response?.data.message ?? "Error updating user details";
       toast.error(errorMessage);
     }
   };
 
-  const handleProfilePictureChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePictureChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (event.target.files && event.target.files[0]) {
       const formData = new FormData();
       formData.append("image", event.target.files[0]);
 
       try {
-        const response = await axios.put<ApiResponse>("/api/profile/change-avatar", formData, {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        });
+        const response = await axios.put<ApiResponse>(
+          "/api/profile/change-avatar",
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
 
         if (response.data.success) {
           toast.success("Profile picture updated successfully");
@@ -113,13 +158,12 @@ function UserDashboard() {
         }
       } catch (error) {
         const axiosError = error as AxiosError<ApiResponse>;
-        let errorMessage = axiosError.response?.data.message ?? "Error updating profile picture";
+        let errorMessage =
+          axiosError.response?.data.message ?? "Error updating profile picture";
         toast.error(errorMessage);
       }
     }
   };
-
-
 
   return (
     <div className="py-20 flex flex-col justify-center items-center">
@@ -133,7 +177,10 @@ function UserDashboard() {
             <div className="flex items-center avatar">
               <label htmlFor="profilePictureInput">
                 <Image
-                  src={userDetails.avatar || "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"}
+                  src={
+                    userDetails.avatar ||
+                    "https://images.pexels.com/photos/415829/pexels-photo-415829.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2"
+                  }
                   alt="Avatar Right"
                   width={40}
                   height={40}
@@ -151,17 +198,32 @@ function UserDashboard() {
           <div className="avatar-group -space-x-6 rtl:space-x-reverse">
             <div className="avatar">
               <div className="w-12">
-                <Image alt="pic" height={200} width={300} src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                <Image
+                  alt="pic"
+                  height={200}
+                  width={300}
+                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                />
               </div>
             </div>
             <div className="avatar">
               <div className="w-12">
-              <Image alt="pic" height={200} width={300} src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                <Image
+                  alt="pic"
+                  height={200}
+                  width={300}
+                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                />
               </div>
             </div>
             <div className="avatar">
               <div className="w-12">
-              <Image alt="pic" height={200} width={300} src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                <Image
+                  alt="pic"
+                  height={200}
+                  width={300}
+                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                />
               </div>
             </div>
             <span className="px-7 mt-5 text-sm font-sans">5 followers</span>
@@ -180,16 +242,50 @@ function UserDashboard() {
           <div className="mx-auto  mt-5 flex flex-col justify-center items-center">
             <div className="relative right-0">
               <ul className="flex space-x-4  mb-4 border-b-2  border-gray-200 justify-between">
-                <li className={`cursor-pointer w-40 md:w-52 pb-2 ${activeTab === "Threads" ? "border-b-2 border-gray-700 text-blue-500" : ""}`} onClick={() => handleTabChange("Threads")}>
+                <li
+                  className={`cursor-pointer w-40 md:w-52 pb-2 ${
+                    activeTab === "Threads"
+                      ? "border-b-2 border-gray-700 text-blue-500"
+                      : ""
+                  }`}
+                  onClick={() => handleTabChange("Threads")}
+                >
                   <span className="ml-20">Posts</span>
                 </li>
-                <li className={`cursor-pointer w-40 sm:w-52 pb-2 ${activeTab === "Replies" ? "border-b-2 border-gray-700 text-blue-500" : ""}`} onClick={() => handleTabChange("Replies")}>
-                <span className="ml-10">Replies</span>
+                <li
+                  className={`cursor-pointer w-40 sm:w-52 pb-2 ${
+                    activeTab === "Replies"
+                      ? "border-b-2 border-gray-700 text-blue-500"
+                      : ""
+                  }`}
+                  onClick={() => handleTabChange("Replies")}
+                >
+                  <span className="ml-10">Replies</span>
                 </li>
               </ul>
               <div>
-                <div className={`${activeTab === "Threads" ? "block" : "hidden"}`}>
-                  {threads.length > 0 ? (
+                <div
+                  className={`${
+                    activeTab === "Threads" ? "block" : "hidden"
+                  } flex flex-col justify-center items-center`}
+                >
+                  {loadingThreads ? (
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col gap-4 w-96 py-5 overflow-hidden"
+                      >
+                        <div className="flex gap-4 items-center">
+                          <div className="skeleton w-16 h-16 rounded-full shrink-0"></div>
+                          <div className="flex flex-col gap-4">
+                            <div className="skeleton h-4 w-20"></div>
+                            <div className="skeleton h-4 w-28"></div>
+                          </div>
+                        </div>
+                        <div className="skeleton h-40 w-[350px] md:w-full"></div>
+                      </div>
+                    ))
+                  ) : threads.length > 0 ? (
                     threads.map((thread) => (
                       <PostCard
                         key={thread._id}
@@ -206,10 +302,63 @@ function UserDashboard() {
                     <p>No threads available.</p>
                   )}
                 </div>
-                <div className={`${activeTab === "Replies" ? "block" : "hidden"}`}>
-                  <p className="font-sans text-base font-light text-gray-500">
-                    All Replies are here
-                  </p>
+                <div
+                  className={`${
+                    activeTab === "Replies" ? "block" : "hidden"
+                  } flex flex-col justify-center items-center`}
+                >
+                  {loadingReplies ? (
+                    Array.from({ length: 5 }).map((_, index) => (
+                      <div
+                        key={index}
+                        className="flex flex-col gap-4 w-96 py-5 overflow-hidden"
+                      >
+                        <div className="flex gap-4 items-center">
+                          <div className="skeleton w-16 h-16 rounded-full shrink-0"></div>
+                          <div className="flex flex-col gap-4">
+                            <div className="skeleton h-4 w-20"></div>
+                            <div className="skeleton h-4 w-28"></div>
+                          </div>
+                        </div>
+                        <div className="skeleton h-40 w-[350px] md:w-full"></div>
+                      </div>
+                    ))
+                  ) : userReplies.length > 0 ? (
+                    userReplies.map((reply, index) => (
+                      <div key={index}>
+                        <PostCard
+                          key={reply.thread._id}
+                          threadId={reply.thread._id}
+                          description={reply.thread.description}
+                          tag={reply.thread.tag}
+                          images={reply.thread.images}
+                          owner={reply.thread.ownerId}
+                          videos={reply.thread.videos}
+                          comments={reply.thread.comments}
+                        />
+                        <div className="border-b-2 border-gray-500 flex flex-col">
+                          <div className="flex gap-2">
+                            <div className="avatar">
+                              <div className="w-16 rounded-full">
+                                <Image
+                                  alt="pic"
+                                  height={200}
+                                  width={300}
+                                  src={reply.owner.avatar || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"}
+                                />
+                              </div>
+                            </div>
+                            <span className="font-semibold mt-1">{reply?.owner.username}</span>
+                          </div>
+                          <div>
+                            {reply?.content}
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No replies available.</p>
+                  )}
                 </div>
               </div>
             </div>

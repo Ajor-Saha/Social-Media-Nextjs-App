@@ -130,6 +130,7 @@ function SearchPage() {
                   users.map((user) => (
                     <FollowCard
                       key={user._id}
+                      userId = {user._id}
                       username={user.username}
                       fullName={user.fullName}
                       followers={user.followers}

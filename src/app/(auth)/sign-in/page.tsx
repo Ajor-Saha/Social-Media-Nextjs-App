@@ -1,46 +1,48 @@
-'use client';
+"use client";
 
-import { signInSchema } from '@/schemas/signInSchema';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { signIn } from 'next-auth/react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import React from 'react';
-import { useForm } from 'react-hook-form';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-import { z } from 'zod';
+import { signInSchema } from "@/schemas/signInSchema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { signIn } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { z } from "zod";
 
 function SignInForm() {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
-      identifier: '',
-      password: '',
+      identifier: "",
+      password: "",
     },
   });
 
   const onSubmit = async (data: z.infer<typeof signInSchema>) => {
-    const result = await signIn('credentials', {
+    setLoading(true);
+    const result = await signIn("credentials", {
       redirect: false,
       identifier: data.identifier,
       password: data.password,
     });
 
     if (result?.error) {
-      if (result.error === 'CredentialsSignin') {
-        toast.error('Incorrect username or password ');
+      if (result.error === "CredentialsSignin") {
+        toast.error("Incorrect username or password ");
       } else {
         toast.error(result.error);
       }
     }
 
+    setLoading(false);
     if (result?.url) {
-      router.replace('/dashboard');
+      router.replace("/dashboard");
     }
   };
-
 
   const handleGoogleSignIn = async () => {
     await signIn("google", {
@@ -48,7 +50,6 @@ function SignInForm() {
       redirect: true,
     });
   };
-
 
   return (
     <div className="font-[sans-serif] py-32 flex items-center md:h-screen px-5">
@@ -106,10 +107,7 @@ function SignInForm() {
               </button>
             </div>
           </div>
-          <form
-            onSubmit={form.handleSubmit(onSubmit)}
-            className="w-full"
-          >
+          <form onSubmit={form.handleSubmit(onSubmit)} className="w-full">
             <div className="mb-8">
               <h3 className="text-2xl font-extrabold">Login</h3>
             </div>
@@ -118,7 +116,7 @@ function SignInForm() {
                 <label className="text-sm mb-2 block">Email or Username</label>
                 <div className="relative flex items-center">
                   <input
-                    {...form.register('identifier')}
+                    {...form.register("identifier")}
                     name="identifier"
                     type="text"
                     required
@@ -140,7 +138,10 @@ function SignInForm() {
                         ></path>
                       </clipPath>
                     </defs>
-                    <g clipPath="url(#a)" transform="matrix(1.33 0 0 -1.33 0 682.667)">
+                    <g
+                      clipPath="url(#a)"
+                      transform="matrix(1.33 0 0 -1.33 0 682.667)"
+                    >
                       <path
                         fill="none"
                         strokeMiterlimit="10"
@@ -160,7 +161,7 @@ function SignInForm() {
                 <label className="text-sm mb-2 block">Password</label>
                 <div className="relative flex items-center">
                   <input
-                    {...form.register('password')}
+                    {...form.register("password")}
                     name="password"
                     type="password"
                     required
@@ -183,16 +184,25 @@ function SignInForm() {
               </div>
             </div>
             <div className="!mt-10">
-              <button
-                type="submit"
-                className="w-full py-3 px-4 text-sm font-semibold rounded bg-blue-600 hover:bg-blue-700 text-white focus:outline-none"
-              >
-                Sign In
-              </button>
+              {loading ? (
+                <button className="btn text-center">
+                  <span className="loading loading-spinner rounded text-center   focus:outline-none"></span>
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="w-full py-3 px-4 text-sm font-semibold rounded bg-blue-600 hover:bg-blue-700 text-white focus:outline-none"
+                >
+                  Sign In
+                </button>
+              )}
             </div>
             <p className="text-sm mt-6 text-center">
               Don't have an account?
-              <Link href="/sign-up" className="text-blue-600 font-semibold hover:underline ml-1">
+              <Link
+                href="/sign-up"
+                className="text-blue-600 font-semibold hover:underline ml-1"
+              >
                 Register here
               </Link>
             </p>

@@ -14,43 +14,25 @@ interface FollowCardProps {
   userId: string;
   username: string;
   fullName: string;
-  followers: string[]; // Corrected type
+  followers?: string[]; // Corrected type
+  following?: string[];
   avatar: string;
+  isFollowOrFollowing: boolean;
 }
 
-function FollowCard({
+function FollowerCard({
   userId,
   username,
   fullName,
   followers,
   avatar,
+  isFollowOrFollowing
 }: FollowCardProps) {
   const { data: session } = useSession();
   const user: User = session?.user;
   const [isFollow, setIsFollow] = useState(false);
 
-  useEffect(() => {
-    if (user?._id && followers.includes(user._id)) {
-      setIsFollow(true);
-    } else {
-      setIsFollow(false);
-    }
-  }, [user, followers]);
-
-  const handleFollowToggle = async () => {
-    if (!user) return;
-
-    try {
-      const response = await axios.put<ApiResponse>(`/api/follow/${userId}`);
-      if (response.data.success) {
-        setIsFollow(!isFollow);
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      toast.error("Error when toggling follow");
-    }
-  };
+  
 
   return (
     <div className="flex items-center justify-between p-4 rounded border-b border-gray-600">
@@ -73,18 +55,18 @@ function FollowCard({
           </Link>
           <div className="text-gray-600">{fullName}</div>
           <div className="text-gray-500 text-sm">
-            {followers.length} followers
+            {followers?.length} followers
           </div>
         </div>
       </div>
       <button
-        onClick={handleFollowToggle}
+        
         className="border border-gray-600 px-5 rounded-lg py-1 text-sm font-semibold"
       >
-        {user?._id === userId ? "You" : isFollow ? "Following" : "Follow"}
+        {isFollowOrFollowing ? "UnFollow" : "Remove"}
       </button>
     </div>
   );
 }
 
-export default FollowCard;
+export default FollowerCard;

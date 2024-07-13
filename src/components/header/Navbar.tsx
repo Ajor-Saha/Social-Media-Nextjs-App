@@ -16,7 +16,6 @@ import ThreadCard from "../card/ThreadCard";
 import { useRouter } from "next/navigation";
 import { TbBuildingCommunity } from "react-icons/tb";
 
-
 function Navbar() {
   const { data: session } = useSession();
   const user: User = session?.user;
@@ -26,7 +25,7 @@ function Navbar() {
     await signOut({
       callbackUrl: "/sign-in", // Specify the login page URL
       redirect: true,
-    }); 
+    });
   };
 
   return (
@@ -70,9 +69,11 @@ function Navbar() {
                 value="light"
               />
             </li>
-            <li>
-              <a>Portfolio</a>
-            </li>
+            {session && (
+              <li>
+                <Link href="/user-setting">Setting</Link>
+              </li>
+            )}
             {session ? (
               <li>
                 <button onClick={handleSignOut}>Logout</button>
@@ -94,10 +95,10 @@ function Navbar() {
             <FaSearch />
           </button>
         </Link>
-       <ThreadCard />
-       <Link href="/community">
+        <ThreadCard />
+        <Link href="/community">
           <button className="btn btn-ghost text-xl">
-          <TbBuildingCommunity />
+            <TbBuildingCommunity />
           </button>
         </Link>
         {session ? (
