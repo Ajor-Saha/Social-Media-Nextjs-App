@@ -4,6 +4,8 @@ import { getServerSession, User } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import mongoose from "mongoose";
 
+
+
 export async function GET(request: Request) {
     await dbConnect();
   

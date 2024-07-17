@@ -5,8 +5,6 @@ import { authOptions } from "../auth/[...nextauth]/options";
 import mongoose from "mongoose";
 import UserModel from "@/model/User";
 import { uploadToCloudinary } from "@/helpers/uploadToCloudinary";
-import { UploadApiResponse } from "cloudinary";
-import Replicate from "replicate";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 export async function POST(req: Request) {
@@ -15,15 +13,16 @@ export async function POST(req: Request) {
   try {
     const formData = await req.formData();
     const file = formData.get("image") as File;
+    const context = formData.get("context") as string;
 
-    if (!file) {
+    if (!file || !context) {
       return new Response(
-        JSON.stringify({ success: false, message: "No file provided" }),
+        JSON.stringify({ success: false, message: "No file or context provided" }),
         { status: 400 }
       );
     }
 
-    const session = await getServerSession(authOptions);
+   const session = await getServerSession(authOptions);
     const _user: User = session?.user;
 
     if (!session || !_user) {
@@ -45,7 +44,7 @@ export async function POST(req: Request) {
         }),
         { status: 400 }
       );
-    }
+    } 
 
     // Upload image to Cloudinary
     const fileBuffer = await file.arrayBuffer();
@@ -74,24 +73,9 @@ export async function POST(req: Request) {
       model: "nlpconnect/vit-gpt2-image-captioning",
     });
 
-    const { generated_text } = description;
+    let { generated_text } = description;
 
-    /*const replicate = new Replicate({ auth: process.env.REPLICATE_API_TOKEN });
-    const prompt = `Give me a description: ${generated_text}`;
-
-    const output = await replicate.run(
-      "tomasmcm/zephyr-7b-beta:961cd6665b811d0c43c0b9488b6dfa85ff5c7bfb875e93b4533e4c7f96c7c526",
-      {
-        input: {
-          top_k: 50,
-          top_p: 0.95,
-          prompt: `</s> ${prompt}</s>`,
-          temperature: 0.8,
-          max_new_tokens: 60,
-          presence_penalty: 1
-        }
-      }
-    );*/
+    
 
     let apikey: string = "";
 
@@ -103,26 +87,29 @@ export async function POST(req: Request) {
 
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-    const prompt: string = `Give me a description about this topic ${generated_text} so that I can directly post it on my social media`;
+    
 
-    const result = await model.generateContent(prompt);
+    const combinedPrompt = `Give me a description about this topic: ${generated_text} and context: ${context} so that I can directly post it on my social media`;
+
+    const result = await model.generateContent(combinedPrompt);
     const content = await result.response;
 
-    const generatedText = content.text();
+    const generatedText = await content.text();
 
     return new Response(
       JSON.stringify({
         success: true,
         description: generatedText,
+        image: imageUrl 
       }),
       { status: 200 }
     );
   } catch (error) {
-    console.error("Error creating thread:", error);
+    console.error("Error creating thread description", error);
     return new Response(
       JSON.stringify({
         success: false,
-        message: "Error creating thread",
+        message: "Error creating thread description",
       }),
       { status: 500 }
     );

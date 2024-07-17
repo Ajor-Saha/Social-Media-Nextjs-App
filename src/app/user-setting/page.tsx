@@ -348,13 +348,13 @@ function SettingPage() {
               {threads.map((thread: any, index: number) => (
                 <PostCard
                   key={index}
-                  threadId={thread._id}
-                  description={thread.description}
-                  tag={thread.tag}
-                  images={thread.images}
-                  owner={thread.ownerId}
-                  videos={thread.videos}
-                  comments={thread.comments}
+                  threadId={thread?._id}
+                  description={thread?.description}
+                  tag={thread?.tag}
+                  images={thread?.images}
+                  owner={thread?.ownerId}
+                  videos={thread?.videos}
+                  comments={thread?.comments}
                 />
               ))}
             </div>

@@ -215,11 +215,7 @@ function UserCommunityPage() {
     }
   };
 
-  const handleLoadMore = () => {
-    const nextPage = currentPage + 1;
-    fetchCommunityThreads(nextPage);
-    setCurrentPage(nextPage);
-  };
+  
 
   const handlePaginationClick = (page: number) => {
     fetchCommunityThreads(page);

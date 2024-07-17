@@ -27,25 +27,25 @@ const HomePage = () => {
   const [postData, setPostData] = useState<any[]>([]);
   const [loading, setLoading] = useState(true); // State to track loading
   const [activeTab, setActiveTab] = useState<string>("home");
+  const [type, setType] = useState<string>("home");
+
   const fetchPosts = useCallback(async () => {
     setLoading(true);
     try {
-      // Set loading to true at the start of the fetch
-      const response = await axios.get(`/api/thread/get-posts`);
+      // Fetch posts based on the `type` state
+      const response = await axios.get(`/api/thread/get-posts?type=${type}`);
       if (response.data.success) {
         setPostData(response.data.threads);
       } else {
-        toast.error(response.data.message || "Error fetching post");
+        toast.error(response.data.message || "Error fetching posts");
       }
     } catch (error) {
       const axiosError = error as AxiosError<ApiResponse>;
-      toast.error(
-        axiosError.response?.data.message ?? "Error fetching like count"
-      );
+      toast.error(axiosError.response?.data.message ?? "Error fetching posts");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [type]);
 
   useEffect(() => {
     fetchPosts();
@@ -53,7 +53,10 @@ const HomePage = () => {
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
+    setType(tab); // Update `type` state to match the selected tab
   };
+
+  
   
 
   return (
@@ -65,13 +68,28 @@ const HomePage = () => {
       <div className="flex justify-center items-center mb-5">
         <ul className="menu menu-horizontal bg-base-200">
           <li>
-            <a className={`${activeTab === 'home' ? "text-primary" : ""}`} onClick={() => handleTabChange('home')}>Home</a>
+            <a
+              className={`${activeTab === "home" ? "text-primary" : ""}`}
+              onClick={() => handleTabChange("home")}
+            >
+              Home
+            </a>
           </li>
           <li>
-            <a className={`${activeTab === 'foryou' ? "text-primary" : ""}`} onClick={() => handleTabChange('foryou')}>For you</a>
+            <a
+              className={`${activeTab === "foryou" ? "text-primary" : ""}`}
+              onClick={() => handleTabChange("foryou")}
+            >
+              For you
+            </a>
           </li>
           <li>
-            <a className={`${activeTab === 'following' ? "text-primary" : ""}`} onClick={() => handleTabChange('following')}>Following</a>
+            <a
+              className={`${activeTab === "following" ? "text-primary" : ""}`}
+              onClick={() => handleTabChange("following")}
+            >
+              Following
+            </a>
           </li>
         </ul>
       </div>
@@ -82,7 +100,7 @@ const HomePage = () => {
             <SkeletonLoader key={index} />
           ))
         ) : // Render posts once data is fetched
-        postData.length > 0 ? (
+        postData?.length > 0 ? (
           postData.map((item, index) => (
             <PostCard
               key={index}

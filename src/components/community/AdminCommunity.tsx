@@ -135,7 +135,6 @@ const AdminCommunity: React.FC<AdminCommunityProps> = ({ community }) => {
     }
   };
 
-  console.log(threads);
   
 
   return (

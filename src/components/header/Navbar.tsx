@@ -74,6 +74,11 @@ function Navbar() {
                 <Link href="/user-setting">Setting</Link>
               </li>
             )}
+            {session && (
+              <li>
+                <Link href="/notifications">Notification</Link>
+              </li>
+            )}
             {session ? (
               <li>
                 <button onClick={handleSignOut}>Logout</button>
@@ -83,6 +88,7 @@ function Navbar() {
                 <a>Login</a>
               </li>
             )}
+            
           </ul>
         </div>
       </div>
