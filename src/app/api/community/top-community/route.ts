@@ -4,10 +4,7 @@ import CommunityModel from "@/model/Community";
 export async function GET(request: Request) {
     await dbConnect();
   
-    const url = new URL(request.url);
-    const page = parseInt(url.searchParams.get("page") || "1", 10);
-    const limit = 9;
-    const skip = (page - 1) * limit;
+    
   
     try {
       const communities = await CommunityModel.aggregate([
@@ -43,9 +40,8 @@ export async function GET(request: Request) {
             totalPosts: -1,
           },
         },
-        // Pagination
-        { $skip: skip },
-        { $limit: limit },
+       
+        
       ]);
   
       if (!communities.length) {

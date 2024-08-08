@@ -35,7 +35,7 @@ interface CardProps {
   images: string[];
   videos: string[];
   owner: owner;
-  comments: number;
+  comments?: number;
 }
 
 interface Comment {
@@ -188,6 +188,25 @@ const PostCard: React.FC<CardProps> = ({
     navigator.clipboard.writeText(link);
     toast.success("Link copied to clipboard!");
   };
+
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this thread?")) {
+      try {
+        const response = await axios.delete<ApiResponse>(
+          `/api/thread/delete-post/${threadId}`
+        );
+        if (response.data.success) {
+          toast.success(response.data.message);
+          window.location.reload();
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse>;
+        toast.error(axiosError.response?.data.message ?? "Error deleting post");
+      }
+    }
+  };
  
 
   return (
@@ -235,8 +254,8 @@ const PostCard: React.FC<CardProps> = ({
               <li className={user?.username === owner?.username ? "block" : "hidden"}>
                 <Link href={`postEdit/${threadId}`}>Edit</Link>
               </li>
-              <li>
-                <a>Follow</a>
+              <li className={user?.username === owner?.username ? "block" : "hidden"}>
+                {user?._id === owner?._id && <a onClick={handleDelete}>Delete</a>}
               </li>
               <li>
                 <a onClick={handleShare}>Copy link</a>
@@ -247,10 +266,10 @@ const PostCard: React.FC<CardProps> = ({
       </div>
 
       <div className="px-6 pt-4">
-        <div className="font-semibold">{description}</div>
+        <Link href={`/post/${threadId}`} className="font-semibold">{description}</Link>
       </div>
       <div className="px-6  pb-5">
-        <Link href={`search/tag/${tag?.name}`} className="link link-primary mr-2">#{tag?.name}</Link>
+        <Link href={`/search/tag/${tag?.name}`} className="link link-primary mr-2">#{tag?.name}</Link>
       </div>
       <div className="carousel w-full">
         {images?.map((image, index) => (

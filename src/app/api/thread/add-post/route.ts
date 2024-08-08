@@ -8,6 +8,7 @@ import { uploadToCloudinary } from "@/helpers/uploadToCloudinary";
 import ThreadModel from "@/model/Thread";
 import TagModel from "@/model/Tag";
 import { UploadApiResponse } from "cloudinary";
+import NotificationModel from "@/model/Notification";
 
 export async function POST(req: Request) {
   await dbConnect();
@@ -85,6 +86,13 @@ export async function POST(req: Request) {
     });
 
     await newThread.save();
+
+    const noitication = await NotificationModel.create({
+      userId: ownerId,
+      name: `${user.username} just created a new post`,
+      threadId: newThread._id,
+      ownerId: newThread.ownerId
+    })
 
     return new Response(
       JSON.stringify({

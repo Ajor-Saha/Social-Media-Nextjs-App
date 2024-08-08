@@ -4,6 +4,8 @@ interface Comment extends Document {
   content: string;
   thread: mongoose.Types.ObjectId;
   owner: mongoose.Types.ObjectId;
+  parentComment?: mongoose.Types.ObjectId; // Optional field for nested comments
+  children?: mongoose.Types.ObjectId[]; // Optional field for child comments
 }
 
 const CommentSchema: Schema<Comment> = new mongoose.Schema({
@@ -21,7 +23,16 @@ const CommentSchema: Schema<Comment> = new mongoose.Schema({
     ref: "User",
     required: true,
   },
-}, { timestamps: true});
+  parentComment: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Comment",
+    default: null,
+  },
+  children: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Comment",
+  }],
+}, { timestamps: true });
 
 const CommentModel =
   (mongoose.models.Comment as mongoose.Model<Comment>) ||

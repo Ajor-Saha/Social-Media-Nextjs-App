@@ -130,17 +130,17 @@ function UserProfile() {
           <div className="avatar-group -space-x-6 rtl:space-x-reverse">
             <div className="avatar">
               <div className="w-12">
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+                <Image src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt='pic' width={20} height={20}/>
               </div>
             </div>
             <div className="avatar">
               <div className="w-12">
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+              <Image src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt='pic' width={20} height={20}/>
               </div>
             </div>
             <div className="avatar">
               <div className="w-12">
-                <img src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" />
+              <Image src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" alt='pic' width={20} height={20}/>
               </div>
             </div>
             <span className="px-7 mt-5 text-sm font-sans">{userDetails?.followers?.length || "0"} followers</span>
@@ -182,8 +182,8 @@ function UserProfile() {
                   )}
                 </div>
                 <div className={`${activeTab === "Replies" ? "block" : "hidden"}`}>
-                  <p className="font-sans text-base font-light text-gray-500">
-                    All Replies are here
+                  <p className="font-sans text-base text-gray-500 text-center font-semibold">
+                    Do new comment on post
                   </p>
                 </div>
               </div>

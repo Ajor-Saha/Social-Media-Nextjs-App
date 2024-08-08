@@ -167,7 +167,7 @@ function UserDashboard() {
 
   return (
     <div className="py-20 flex flex-col justify-center items-center">
-      <div className="card border-x border-gray-100 md:w-[550px] lg:w-[650px] sm:w-[500px] w-[400px] bg-base-100 shadow-xl">
+      <div className="card md:border-x border-gray-100 md:w-[550px] lg:w-[650px] sm:w-[500px] w-[400px] bg-base-100 shadow-xl">
         <div className="card-body">
           <div className="flex justify-between items-center mb-4">
             <div className="flex items-center flex-col">
@@ -288,18 +288,18 @@ function UserDashboard() {
                   ) : threads.length > 0 ? (
                     threads.map((thread) => (
                       <PostCard
-                        key={thread._id}
-                        threadId={thread._id}
-                        description={thread.description}
-                        tag={thread.tag}
-                        images={thread.images}
-                        owner={thread.ownerId}
-                        videos={thread.videos}
-                        comments={thread.comments}
+                        key={thread?._id}
+                        threadId={thread?._id}
+                        description={thread?.description}
+                        tag={thread?.tag}
+                        images={thread?.images}
+                        owner={thread?.ownerId}
+                        videos={thread?.videos}
+                        comments={thread?.comments}
                       />
                     ))
                   ) : (
-                    <p>No threads available.</p>
+                    <p className="font-semibold">No post available. Create New post</p>
                   )}
                 </div>
                 <div
@@ -327,14 +327,14 @@ function UserDashboard() {
                     userReplies.map((reply, index) => (
                       <div key={index}>
                         <PostCard
-                          key={reply.thread._id}
-                          threadId={reply.thread._id}
-                          description={reply.thread.description}
-                          tag={reply.thread.tag}
-                          images={reply.thread.images}
-                          owner={reply.thread.ownerId}
-                          videos={reply.thread.videos}
-                          comments={reply.thread.comments}
+                          key={reply?.thread?._id}
+                          threadId={reply?.thread?._id}
+                          description={reply?.thread?.description}
+                          tag={reply?.thread?.tag}
+                          images={reply?.thread?.images}
+                          owner={reply?.thread?.ownerId}
+                          videos={reply?.thread?.videos}
+                          comments={reply?.thread?.comments}
                         />
                         <div className="border-b-2 border-gray-500 flex flex-col">
                           <div className="flex gap-2">
@@ -357,7 +357,7 @@ function UserDashboard() {
                       </div>
                     ))
                   ) : (
-                    <p>No replies available.</p>
+                    <p className="font-semibold">No replies available for this user.</p>
                   )}
                 </div>
               </div>

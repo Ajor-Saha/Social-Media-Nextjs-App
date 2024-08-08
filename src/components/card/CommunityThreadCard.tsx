@@ -12,6 +12,9 @@ import { GoShareAndroid } from "react-icons/go";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CommentCard from "./CommentCard";
+import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
+import { User } from "next-auth";
 // Define the types for the thread prop
 interface Thread {
   _id: string;
@@ -54,6 +57,10 @@ function CommunityThreadCard({
   const [isShowComments, setIsShowComments] = useState(false);
   const [threadComments, setThreadComments] = useState<Comment[]>([]);
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
+  const { data: session } = useSession();
+  const user: User = session?.user;
+
 
   const fetchLikeCount = useCallback(async () => {
     try {
@@ -148,6 +155,35 @@ function CommunityThreadCard({
     setIsShowComments(!isShowComments);
   };
 
+  const handleShare = () => {
+    const link = `http://localhost:3000/post/${thread?._id}`;
+    navigator.clipboard.writeText(link);
+    toast.success("Link copied to clipboard!");
+  };
+
+  const navigateToTag = () => {
+    router.push(`/search/tag/${thread?.tag?.name}`);
+  };
+
+  
+
+  const handleSave = async () => {
+    try {
+      const response = await axios.post<ApiResponse>(
+        `/api/thread/save-post/${thread?._id}`
+      );
+      if (response.data.success) {
+        toast.success(response.data.message);
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      const axiosError = error as AxiosError<ApiResponse>;
+      toast.error(axiosError.response?.data.message ?? "Error saving post");
+    }
+  };
+ 
+
   return (
     <div className="md:w-96 w-80 lg:w-[500px] rounded overflow-hidden p-2 my-2 border-b border-gray-400">
       <div className="flex flex-row justify-between items-start gap-3">
@@ -166,7 +202,11 @@ function CommunityThreadCard({
             </div>
           </div>
           <div className="ml-2 flex flex-row gap-2">
-            <Link href="/">
+            <Link href={
+                user?.username === thread?.ownerId?.username
+                  ? "/dashboard"
+                  : `/profile/${thread?.ownerId?.username}`
+              }>
               <h3 className="font-semibold text-xl">
                 {thread.ownerId?.username}
               </h3>
@@ -184,16 +224,16 @@ function CommunityThreadCard({
               className="dropdown-content z-[1] menu p-2 shadow bg-base-100 rounded-box w-52"
             >
               <li className="flex">
-                <a>save</a>
+                <a onClick={handleSave}>save</a>
               </li>
-              <li>
-                <Link href="/edit">Edit</Link>
+              <li className={user?.username === thread?.ownerId?.username ? "block" : "hidden"}>
+                <Link href={`/postEdit/${thread?._id}`}>Edit</Link>
               </li>
               <li>
                 <a>Follow</a>
               </li>
               <li>
-                <a>Copy link</a>
+                <a onClick={handleShare}>Copy link</a>
               </li>
             </ul>
           </div>
@@ -204,7 +244,7 @@ function CommunityThreadCard({
         <div className="font-semibold  mb-2">{thread?.description}</div>
       </div>
       <div className="px-6 pt-4 pb-2">
-        <a className="link link-primary mr-2 pb-2">#{thread.tag?.name}</a>
+        <a className="link link-primary mr-2 pb-2" onClick={navigateToTag}>#{thread.tag?.name}</a>
       </div>
       <div className="carousel w-full">
         {thread.images &&
@@ -250,7 +290,7 @@ function CommunityThreadCard({
             <span>{thread.comments}</span>
           </button>
         </div>
-        <button>
+        <button onClick={handleShare}>
           <GoShareAndroid size={20} />
         </button>
       </div>

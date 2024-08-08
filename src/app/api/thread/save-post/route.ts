@@ -72,21 +72,21 @@ export async function GET(request: Request) {
       .sort({ createdAt: -1 })
       .exec();
 
-    if (!saved) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "No saved posts found",
-        }),
-        { status: 404 }
-      );
-    }
+    // if (!saved) {
+    //   return new Response(
+    //     JSON.stringify({
+    //       success: false,
+    //       message: "No saved posts found",
+    //     }),
+    //     { status: 404 }
+    //   );
+    // }
 
     return new Response(
       JSON.stringify({
         success: true,
         message: "Posts fetched successfully",
-        data: saved.saved,
+        data: saved?.saved,
       }),
       { status: 200 }
     );

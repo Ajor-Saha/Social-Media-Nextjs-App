@@ -218,9 +218,9 @@ function SignUpForm() {
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
-                  <button className="btn">
+                  <button className="flex gap-2 justify-center items-center mx-auto">
                     <span className="loading loading-spinner">Please wait</span>
-                    loading
+                    <span>Please wait</span>
                   </button>
                 ) : (
                   "Sign Up"

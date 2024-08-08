@@ -22,7 +22,16 @@ export async function GET(
       );
     }
 
-    const comments = await CommentModel.find({ thread: threadId }).populate('owner', 'username avatar');
+    const comments = await CommentModel.find({ thread: threadId, parentComment: null })
+      .populate('owner', 'username avatar')
+      .populate({
+        path: 'children',
+        populate: {
+          path: 'owner',
+          select: 'username avatar',
+        },
+        select: 'content',
+      });
 
     return new Response(
       JSON.stringify({

@@ -72,15 +72,15 @@ export async function GET(request: Request) {
       .sort({ createdAt: -1 })
       .exec();
 
-    if (!liked.length) {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          message: "No liked posts found",
-        }),
-        { status: 404 }
-      );
-    }
+    // if (!liked.length) {
+    //   return new Response(
+    //     JSON.stringify({
+    //       success: false,
+    //       message: "No liked posts found",
+    //     }),
+    //     { status: 404 }
+    //   );
+    // }
 
     return new Response(
       JSON.stringify({

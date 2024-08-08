@@ -98,7 +98,7 @@ const CommunityPage = () => {
   const fetchRecentCommunities = async (page: number) => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/community?page=${page}`);
+      const response = await axios.get(`/api/community`);
       if (response.data.success) {
         setCommunities(response.data.communities);
       } else {
@@ -117,7 +117,7 @@ const CommunityPage = () => {
   const fetchTopCommunities = async (page: number) => {
     setLoading(true);
     try {
-      const response = await axios.get(`/api/community/top-community?page=${page}`);
+      const response = await axios.get(`/api/community/top-community`);
       if (response.data.success) {
         setCommunities(response.data.communities);
       } else {
@@ -148,7 +148,7 @@ const CommunityPage = () => {
   return (
     <div className="py-20 flex flex-col justify-center items-center">
       <ToastContainer />
-      <div className="card md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl border-x">
+      <div className="card md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl md:border-x">
         <div className="card-body">
           <div className="flex gap-5 justify-center items-center">
             <button
@@ -196,21 +196,7 @@ const CommunityPage = () => {
               ))
             )}
           </div>
-          <div className="join grid grid-cols-2 mt-4 mx-auto w-10/12">
-            <button
-              className="join-item btn btn-outline"
-              disabled={page <= 1}
-              onClick={() => setPage(page - 1)}
-            >
-              Previous page
-            </button>
-            <button
-              className="join-item btn btn-outline"
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </button>
-          </div>
+          
         </div>
       </div>
       <div
@@ -221,7 +207,7 @@ const CommunityPage = () => {
       </div>
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-          <div className="card card-side bg-base-100 shadow-xl w-[450px] md:w-[600px] lg:w-[750px]">
+          <div className="card card-side bg-base-100 shadow-xl w-[360px] sm:w-[450px] md:w-[600px] lg:w-[700px]">
             <div className="card-body">
               <button
                 className="absolute top-2 right-2 rounded-full p-1"

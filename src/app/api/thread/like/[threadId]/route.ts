@@ -6,6 +6,7 @@ import ThreadModel from "@/model/Thread";
 import LikeModel from "@/model/Like";
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import CommunityModel from "@/model/Community";
+import NotificationModel from "@/model/Notification";
 
 export async function POST(
   request: Request,
@@ -109,6 +110,15 @@ export async function POST(
     
     await thread.save();
     await newLike.save();
+
+    if (!existingLike) {
+      const notification = await NotificationModel.create({
+        name: `${user.username} liked your post`,
+        ownerId: thread.ownerId,
+        threadId: thread._id,
+        userId: user._id
+      })
+    }
 
     return new Response(
       JSON.stringify({

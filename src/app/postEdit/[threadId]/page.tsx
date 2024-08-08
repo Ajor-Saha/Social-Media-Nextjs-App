@@ -21,7 +21,7 @@ function EditPage() {
 
   const fetchTheadDetails = useCallback(async () => {
     try {
-      const response = await axios.get<ApiResponse>(
+      const response = await axios.get<any>(
         `/api/thread/get-posts/${threadId}`
       );
       if (response.data.success) {
@@ -122,7 +122,7 @@ function EditPage() {
   return (
     <div className="py-32 flex flex-col justify-center items-center">
       <h1 className="pb-5 text-lg font-bold"> Edit Your Post</h1>
-      <div className="card card-side bg-base-100 shadow-xl md:w-[550px] lg:w-[900px] sm:w-[500px] w-[400px] flex flex-col lg:flex-row">
+      <div className="card card-side bg-base-100 shadow-xl md:w-[550px] lg:w-[900px] sm:w-[500px] w-[360px] flex flex-col lg:flex-row">
         <div className="carousel lg:w-1/2 relative">
           {loading ? (
             <div className="skeleton h-48 lg:h-auto w-full"></div>

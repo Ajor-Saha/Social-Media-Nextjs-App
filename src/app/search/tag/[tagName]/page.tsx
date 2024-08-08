@@ -58,7 +58,7 @@ function TagName() {
   return (
     <div className="py-20 flex flex-col justify-center items-center h-auto">
       <h1 className="text-lg font-semibold text-secondary">#{tagName || ""}</h1>
-      <div className="card  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl border-x">
+      <div className="card  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl md:border-x">
         <div className="card-body">
           <div className="flex gap-5">
             <button
@@ -90,7 +90,7 @@ function TagName() {
               ))}
             </div>
           ) : (
-            <div className="py-10">
+            <div className="py-10 mx-auto">
               {threads.map((thread: any, index: number) => (
                 <PostCard
                   key={index}

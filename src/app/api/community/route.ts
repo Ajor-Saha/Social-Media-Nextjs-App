@@ -98,18 +98,13 @@ export async function POST(req: Request) {
 
 export async function GET(request: Request) {
     await dbConnect();
-  
-    const url = new URL(request.url);
-    const page = parseInt(url.searchParams.get("page") || "1", 10);
-    const limit = 9;
-    const skip = (page - 1) * limit;
-  
+ 
+    
     try {
       // Fetch users sorted by the latest created date with pagination
       const communities = await CommunityModel.find({})
         .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit);
+        
   
       if (!communities.length) {
         return new Response(

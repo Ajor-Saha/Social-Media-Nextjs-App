@@ -24,8 +24,6 @@ interface Follower {
   avatar: string;
 }
 
-
-
 function SettingPage() {
   const { data: session } = useSession();
   const user: User = session?.user;
@@ -37,7 +35,8 @@ function SettingPage() {
   const [threads, setThreads] = useState([]);
   const [dynamicData, setDynamicData] = useState<Follower[]>([]);
   const [loadingDynamic, setLoadingDynamic] = useState<boolean>(false);
-  const [isFollowOrFollowing, setIsFollowOrFollowing] = useState<boolean>(false);
+  const [isFollowOrFollowing, setIsFollowOrFollowing] =
+    useState<boolean>(false);
   const [userDetails, setUserDetails] = useState({
     fullName: "",
     username: "",
@@ -89,12 +88,9 @@ function SettingPage() {
     }
   }, []);
 
-
-  
   useEffect(() => {
     if (session) {
       fetchUserDetails();
-      
     }
   }, [session, fetchUserDetails]);
 
@@ -135,7 +131,7 @@ function SettingPage() {
 
   const fetchSavedPosts = useCallback(async () => {
     setLoading(true);
-    setActiveButton("saved")
+    setActiveButton("saved");
     try {
       const response = await axios.get<any>(`/api/thread/save-post`);
       if (response.data.success) {
@@ -152,7 +148,7 @@ function SettingPage() {
 
   const fetchLikedPosts = useCallback(async () => {
     setLoading(true);
-    setActiveButton("liked")
+    setActiveButton("liked");
     try {
       const response = await axios.get<any>(`/api/thread/like`);
       if (response.data.success) {
@@ -170,13 +166,6 @@ function SettingPage() {
   useEffect(() => {
     fetchSavedPosts();
   }, [fetchSavedPosts]);
-
-
-  
-  
-
-
-
 
   return (
     <div className="flex pt-8">
@@ -222,7 +211,7 @@ function SettingPage() {
       </aside>
       {buttonChange === "user" && (
         <main className="py-20 mx-auto">
-          <div className="card border-x  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl">
+          <div className="card md:border-x  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl">
             <div className="card-body">
               <form className="flex flex-col gap-5" onSubmit={handleUpdate}>
                 <div className="flex flex-col md:flex-row gap-5">
@@ -308,7 +297,7 @@ function SettingPage() {
       )}
       {buttonChange === "save" && (
         <main className="py-16 mx-auto">
-          <div className="card  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl border-x">
+          <div className="card  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl md:border-x">
             <div className="card-body">
               <div className="flex gap-5">
                 <button
@@ -329,61 +318,71 @@ function SettingPage() {
                 </button>
               </div>
               {loading ? (
-            <div className="flex flex-col justify-center items-center">
-              {[1, 2, 3].map((item, index) => (
-                <div key={index} className="flex flex-col gap-4 pt-5 w-full px-5">
-                  <div className="flex gap-4 items-center">
-                    <div className="skeleton w-16 h-16 rounded-full shrink-0"></div>
-                    <div className="flex flex-col gap-4">
-                      <div className="skeleton h-4 w-20"></div>
-                      <div className="skeleton h-4 w-28"></div>
+                <div className="flex flex-col justify-center items-center">
+                  {[1, 2, 3].map((item, index) => (
+                    <div
+                      key={index}
+                      className="flex flex-col gap-4 pt-5 w-full px-5"
+                    >
+                      <div className="flex gap-4 items-center">
+                        <div className="skeleton w-16 h-16 rounded-full shrink-0"></div>
+                        <div className="flex flex-col gap-4">
+                          <div className="skeleton h-4 w-20"></div>
+                          <div className="skeleton h-4 w-28"></div>
+                        </div>
+                      </div>
+                      <div className="skeleton h-44 w-full"></div>
                     </div>
-                  </div>
-                  <div className="skeleton h-44 w-full"></div>
+                  ))}
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="py-10 flex flex-col justify-center items-center">
-              {threads.map((thread: any, index: number) => (
-                <PostCard
-                  key={index}
-                  threadId={thread?._id}
-                  description={thread?.description}
-                  tag={thread?.tag}
-                  images={thread?.images}
-                  owner={thread?.ownerId}
-                  videos={thread?.videos}
-                  comments={thread?.comments}
-                />
-              ))}
-            </div>
-          )}
+              ) : threads?.length > 0 ? (
+                <div className="py-10 flex flex-col justify-center items-center">
+                  {threads?.map((thread: any, index: number) => (
+                    <PostCard
+                      key={index}
+                      threadId={thread?._id}
+                      description={thread?.description}
+                      tag={thread?.tag}
+                      images={thread?.images}
+                      owner={thread?.ownerId}
+                      videos={thread?.videos}
+                      comments={thread?.comments}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <p className="text-center font-semibold mt-5">No saved or liked post available</p>
+              )}
             </div>
           </div>
         </main>
       )}
       {buttonChange === "followers" && (
         <main className="py-20 mx-auto">
-          <div className="card  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl">
+          <div className="card md:border-x  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl">
+            <h2 className="text-center font-semibold py-2 lg:hidden block">Follower List</h2>
             <div className="card-body">
               {loadingDynamic ? (
                 <div className="flex justify-center items-center">
-                <span className="loading loading-bars loading-xs"></span>
-                <span className="loading loading-bars loading-sm"></span>
-                <span className="loading loading-bars loading-md"></span>
-                <span className="loading loading-bars loading-lg"></span>
-              </div>
-              ) : (dynamicData.length > 0 ? (dynamicData.map((follower, index) => (
-                <FollowerCard key={index}
-                userId={follower._id}
-                fullName={follower.fullName}
-                username={follower.username}
-                followers={follower.followers}
-                avatar={follower.avatar}
-                isFollowOrFollowing={false}
-                 />
-              ))) : ( "No follower found")
+                  <span className="loading loading-bars loading-xs"></span>
+                  <span className="loading loading-bars loading-sm"></span>
+                  <span className="loading loading-bars loading-md"></span>
+                  <span className="loading loading-bars loading-lg"></span>
+                </div>
+              ) : dynamicData.length > 0 ? (
+                dynamicData.map((follower, index) => (
+                  <FollowerCard
+                    key={index}
+                    userId={follower._id}
+                    fullName={follower.fullName}
+                    username={follower.username}
+                    followers={follower.followers}
+                    avatar={follower.avatar}
+                    isFollowOrFollowing={false}
+                  />
+                ))
+              ) : (
+                <p className="font-semibold text-center">No follower found</p>
               )}
             </div>
           </div>
@@ -391,29 +390,34 @@ function SettingPage() {
       )}
       {buttonChange === "following" && (
         <main className="py-20 mx-auto">
-        <div className="card  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl">
-          <div className="card-body">
-            {loadingDynamic ? (
-              <div className="flex justify-center items-center">
-              <span className="loading loading-bars loading-xs"></span>
-              <span className="loading loading-bars loading-sm"></span>
-              <span className="loading loading-bars loading-md"></span>
-              <span className="loading loading-bars loading-lg"></span>
+          <div className="card  md:w-[550px] lg:w-[650px] sm:w-[450px] w-[400px] bg-base-100 shadow-xl">
+          <h2 className="text-center font-semibold py-2 lg:hidden block">Following List</h2>
+            <div className="card-body">
+              {loadingDynamic ? (
+                <div className="flex justify-center items-center">
+                  <span className="loading loading-bars loading-xs"></span>
+                  <span className="loading loading-bars loading-sm"></span>
+                  <span className="loading loading-bars loading-md"></span>
+                  <span className="loading loading-bars loading-lg"></span>
+                </div>
+              ) : dynamicData.length > 0 ? (
+                dynamicData.map((follower, index) => (
+                  <FollowerCard
+                    key={index}
+                    userId={follower._id}
+                    fullName={follower.fullName}
+                    username={follower.username}
+                    followers={follower.followers}
+                    avatar={follower.avatar}
+                    isFollowOrFollowing={true}
+                  />
+                ))
+              ) : (
+                "No follower found"
+              )}
             </div>
-            ) : (dynamicData.length > 0 ? (dynamicData.map((follower, index) => (
-              <FollowerCard key={index}
-              userId={follower._id}
-              fullName={follower.fullName}
-              username={follower.username}
-              followers={follower.followers}
-              avatar={follower.avatar}
-              isFollowOrFollowing={true}
-               />
-            ))) : ( "No follower found")
-            )}
           </div>
-        </div>
-      </main>
+        </main>
       )}
       <ToastContainer />
     </div>

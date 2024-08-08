@@ -20,7 +20,7 @@ const LikeSchema: Schema<Like> = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Comment",
   },
-});
+}, {timestamps: true});
 
 const LikeModel =
   (mongoose.models.Like as mongoose.Model<Like>) ||

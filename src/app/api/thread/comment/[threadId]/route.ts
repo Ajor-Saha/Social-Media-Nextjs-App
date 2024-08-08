@@ -1,6 +1,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/options";
 import dbConnect from "@/lib/dbConnect";
 import CommentModel from "@/model/Comment";
+import NotificationModel from "@/model/Notification";
 import ThreadModel from "@/model/Thread";
 import UserModel from "@/model/User";
 import mongoose from "mongoose";
@@ -64,6 +65,15 @@ export async function POST(
     // Update thread's comment count
     thread.comments += 1;
     await thread.save();
+
+    const notification = NotificationModel.create({
+      name: `${user.username} Commented on your post`,
+      ownerId: thread.ownerId,
+      threadId: thread._id,
+      userId: user._id
+    })
+
+
 
     return new Response(
       JSON.stringify({

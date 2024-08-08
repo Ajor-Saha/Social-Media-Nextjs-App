@@ -341,7 +341,7 @@ function UserCommunityPage() {
                     <GoPlusCircle size={30} className="" />
                   </button>
 
-                  <div className="carousel h-[270px] rounded-box w-[400px] md:w-[450px] lg:w-[500px] ml-4 border-x p-2 mt-10">
+                  <div className="carousel h-[270px] rounded-box w-[400px] md:w-[450px] lg:w-[500px] ml-4 md:border-x p-2 mt-10">
                     {members.admins?.map((member: any) => (
                       <div className="carousel-item w-1/2" key={member._id}>
                         <div className="flex flex-col mx-auto pt-5">
