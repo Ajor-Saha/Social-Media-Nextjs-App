@@ -72,7 +72,7 @@ function SearchPage() {
     }
   }, []);
 
-  // Handle search input change
+  
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const text = e.target.value;
     setSearchText(text);
