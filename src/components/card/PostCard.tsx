@@ -181,7 +181,7 @@ const PostCard: React.FC<CardProps> = ({
   };
 
   const handleShare = () => {
-    const link = `http://localhost:3000/post/${threadId}`;
+    const link = `https://social-media-nextjs-app.vercel.app/post/${threadId}`;
     navigator.clipboard.writeText(link);
     toast.success("Link copied to clipboard!");
   };

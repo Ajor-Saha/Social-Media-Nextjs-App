@@ -158,7 +158,7 @@ function CommunityThreadCard({
   };
 
   const handleShare = () => {
-    const link = `http://localhost:3000/post/${thread?._id}`;
+    const link = `https://social-media-nextjs-app.vercel.app/post/${thread?._id}`;
     navigator.clipboard.writeText(link);
     toast.success("Link copied to clipboard!");
   };

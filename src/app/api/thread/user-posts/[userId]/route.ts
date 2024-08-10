@@ -23,6 +23,16 @@ export async function GET(
       );
     }
 
+    if (!TagModel) {
+      return new Response(
+        JSON.stringify({
+          success: false,
+          message: "TagModel not found",
+        }),
+        { status: 400 }
+      );
+    }
+
     // Fetch all threads from the database and sort by creation date in descending order
     const threads = await ThreadModel.find({ ownerId })
       .populate({
