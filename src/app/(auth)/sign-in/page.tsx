@@ -198,7 +198,7 @@ function SignInForm() {
               )}
             </div>
             <p className="text-sm mt-6 text-center">
-              Don't have an account?
+               Don&apos;t have an account?
               <Link
                 href="/sign-up"
                 className="text-blue-600 font-semibold hover:underline ml-1"

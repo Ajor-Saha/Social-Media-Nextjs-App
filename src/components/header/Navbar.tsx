@@ -85,7 +85,7 @@ function Navbar() {
               </li>
             ) : (
               <li>
-                <a>Login</a>
+                <Link href="/sign-in">Login</Link>
               </li>
             )}
             

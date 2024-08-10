@@ -215,14 +215,9 @@ function UserCommunityPage() {
     }
   };
 
-  
-
   const handlePaginationClick = (page: number) => {
     fetchCommunityThreads(page);
   };
-
-  
-  
 
   const isAdmin = user && community.admin?.includes(user._id);
 
@@ -345,23 +340,25 @@ function UserCommunityPage() {
                     {members.admins?.map((member: any) => (
                       <div className="carousel-item w-1/2" key={member._id}>
                         <div className="flex flex-col mx-auto pt-5">
-                          <div className="avatar">
-                            <div className="w-24 rounded-full">
+                          <div className="avatar mt-3 px-2">
+                            <div className="w-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                               <Image
-                                width={24}
-                                height={24}
-                                alt="pic"
                                 src={
-                                  member?.avatar ||
+                                  member.avatar ||
                                   "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                                 }
+                                alt="Avatar"
+                                width={300}
+                                height={150}
                               />
                             </div>
                           </div>
                           <h1 className="font-bold mt-1">{member?.username}</h1>
                           <p>{member?.followers?.length} followers</p>
                           <p>admin</p>
-                          <button className="btn mt-3 outline">{member?._id === user?._id ? "You" : "Follow"}</button>
+                          <button className="btn mt-3 outline">
+                            {member?._id === user?._id ? "You" : "Follow"}
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -369,23 +366,25 @@ function UserCommunityPage() {
                     {members.members?.map((member: any) => (
                       <div className="carousel-item w-1/2" key={member._id}>
                         <div className="flex flex-col mx-auto pt-5">
-                          <div className="avatar">
-                            <div className="w-24 rounded-full">
+                        <div className="avatar mt-3 px-2">
+                            <div className="w-20 rounded-full ring ring-primary ring-offset-base-100 ring-offset-2">
                               <Image
-                                width={24}
-                                height={24}
-                                alt="pic"
                                 src={
-                                  member?.avatar ||
+                                  member.avatar ||
                                   "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                                 }
+                                alt="Avatar"
+                                width={300}
+                                height={150}
                               />
                             </div>
                           </div>
                           <h1 className="font-bold mt-1">{member?.username}</h1>
                           <p>member</p>
                           <p>{member.followers?.length} followers</p>
-                          <button className="btn mt-3 outline">{member?._id === user?._id ? "You" : "Follow"}</button>
+                          <button className="btn mt-3 outline">
+                            {member?._id === user?._id ? "You" : "Follow"}
+                          </button>
                         </div>
                       </div>
                     ))}
@@ -401,35 +400,56 @@ function UserCommunityPage() {
             {activeTab === "post" && (
               <>
                 {threads.length === 0 ? (
-                  <div className="py-8 text-center text-gray-600">
-                    No posts available.
+                  <div className="flex flex-col justify-between items-center mt-4">
+                    <h1 className="font-semibold pt-3 py-8">
+                      No more post available
+                    </h1>
+                    <div className="join grid grid-cols-2">
+                      <button
+                        className="join-item btn btn-outline"
+                        onClick={() => handlePaginationClick(currentPage - 1)}
+                        disabled={currentPage === 1}
+                      >
+                        Previous page
+                      </button>
+                      <button
+                        className="join-item btn btn-outline"
+                        onClick={() => handlePaginationClick(currentPage + 1)}
+                        disabled={threads.length < pageSize}
+                      >
+                        Next
+                      </button>
+                    </div>
                   </div>
                 ) : (
                   <div className="card w-[350px] overflow-y-auto border-y border-gray-500 p-4 sm:w-[450px] md:w-[650px] lg:w-[750px] md:ml-24 bg-base-100 shadow-xl flex flex-col justify-center items-center pb-12">
                     {threads.map((thread) => (
-                      <CommunityThreadCard key={thread._id} thread={thread} communityId={community?._id} />
+                      <CommunityThreadCard
+                        key={thread._id}
+                        thread={thread}
+                        communityId={community?._id}
+                      />
                     ))}
                     <div className="flex justify-between items-center mt-4">
-                  <div className="join grid grid-cols-2">
-                    <button
-                      className="join-item btn btn-outline"
-                      onClick={() => handlePaginationClick(currentPage - 1)}
-                      disabled={currentPage === 1}
-                    >
-                      Previous page
-                    </button>
-                    <button
-                      className="join-item btn btn-outline"
-                      onClick={() => handlePaginationClick(currentPage + 1)}
-                      disabled={threads.length < pageSize}
-                    >
-                      Next
-                    </button>
-                  </div>
-                </div>
+                      <div className="join grid grid-cols-2">
+                        <button
+                          className="join-item btn btn-outline"
+                          onClick={() => handlePaginationClick(currentPage - 1)}
+                          disabled={currentPage === 1}
+                        >
+                          Previous page
+                        </button>
+                        <button
+                          className="join-item btn btn-outline"
+                          onClick={() => handlePaginationClick(currentPage + 1)}
+                          disabled={threads.length < pageSize}
+                        >
+                          Next
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 )}
-                
               </>
             )}
             {activeTab === "user" && (
@@ -459,7 +479,7 @@ function UserCommunityPage() {
       )}
       {buttonChange === "edit" && <EditCommunity community={community} />}
       {isAdmin && buttonChange === "admin" ? (
-        <AdminCommunity  community={community}/>
+        <AdminCommunity community={community} />
       ) : (
         buttonChange === "admin" && (
           <div className="flex flex-col items-center pt-20 mx-auto w-full font-extrabold text-lg">

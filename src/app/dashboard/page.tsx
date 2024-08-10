@@ -30,6 +30,7 @@ function UserDashboard() {
   const [userReplies, setUserReplies] = useState<any[]>([]);
   const [loadingThreads, setLoadingThreads] = useState<boolean>(true);
   const [loadingReplies, setLoadingReplies] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleTabChange = (tab: string) => {
     setActiveTab(tab);
@@ -112,13 +113,13 @@ function UserDashboard() {
 
   const handleFormSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.put<ApiResponse>("/api/update-profile", {
         fullName,
         bio,
       });
       if (response.data.success) {
-        toast.success("User details updated successfully");
         setUserDetails(response.data.data);
         setShowModal(false);
       } else {
@@ -129,6 +130,8 @@ function UserDashboard() {
       let errorMessage =
         axiosError.response?.data.message ?? "Error updating user details";
       toast.error(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -299,7 +302,9 @@ function UserDashboard() {
                       />
                     ))
                   ) : (
-                    <p className="font-semibold">No post available. Create New post</p>
+                    <p className="font-semibold">
+                      No post available. Create New post
+                    </p>
                   )}
                 </div>
                 <div
@@ -344,20 +349,25 @@ function UserDashboard() {
                                   alt="pic"
                                   height={200}
                                   width={300}
-                                  src={reply.owner.avatar || "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"}
+                                  src={
+                                    reply.owner.avatar ||
+                                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                                  }
                                 />
                               </div>
                             </div>
-                            <span className="font-semibold mt-1">{reply?.owner.username}</span>
+                            <span className="font-semibold mt-1">
+                              {reply?.owner.username}
+                            </span>
                           </div>
-                          <div>
-                            {reply?.content}
-                          </div>
+                          <div>{reply?.content}</div>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="font-semibold">No replies available for this user.</p>
+                    <p className="font-semibold">
+                      No replies available for this user.
+                    </p>
                   )}
                 </div>
               </div>
@@ -366,56 +376,59 @@ function UserDashboard() {
         </div>
       </div>
       {showModal && (
-        <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg shadow-xl w-96 p-6 relative">
-            <h2 className="text-lg font-bold mb-4">Edit Profile</h2>
-            <form onSubmit={handleFormSubmit}>
-              <div className="mb-4">
-                <label
-                  htmlFor="fullName"
-                  className="block text-sm text-gray-700 font-bold mb-2"
-                >
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  id="fullName"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline"
-                />
-              </div>
-              <div className="mb-4">
-                <label
-                  htmlFor="bio"
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                >
-                  Bio
-                </label>
-                <textarea
-                  id="bio"
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-500 leading-tight focus:outline-none focus:shadow-outline"
-                  rows={3}
-                ></textarea>
-              </div>
-              <div className="flex justify-end">
-                <button
-                  type="button"
-                  className="bg-red-500 text-white font-bold py-2 px-4 rounded mr-2"
-                  onClick={() => setShowModal(false)}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white font-bold py-2 px-4 rounded"
-                >
-                  Save
-                </button>
-              </div>
-            </form>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="card card-side bg-base-100 shadow-xl w-[380px] sm:w-[450px] md:w-[600px] lg:w-[750px] h-auto">
+            <div className="card-body">
+              <h2 className="text-lg font-bold mb-4">Edit Profile</h2>
+              <form onSubmit={handleFormSubmit}>
+                <div className="mb-4">
+                  <label
+                    htmlFor="fullName"
+                    className="block text-sm text-gray-700 font-bold mb-2"
+                  >
+                    Full Name
+                  </label>
+                  <input
+                    type="text"
+                    id="fullName"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    className="input input-bordered input-primary w-full "
+                  />
+                </div>
+                <div className="mb-4">
+                  <label
+                    htmlFor="bio"
+                    className="block text-gray-700 text-sm font-bold mb-2"
+                  >
+                    Bio
+                  </label>
+                  <textarea
+                    id="bio"
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value)}
+                    className="textarea textarea-info w-full "
+                    rows={3}
+                  ></textarea>
+                </div>
+                <div className="flex gap-5 justify-end">
+                  <button
+                    type="button"
+                    className="btn btn-warning sm:w-24"
+                    onClick={() => setShowModal(false)}
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-success sm:w-24"
+                    disabled={loading}
+                  >
+                    {loading ? "Saving..." : "Save"}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

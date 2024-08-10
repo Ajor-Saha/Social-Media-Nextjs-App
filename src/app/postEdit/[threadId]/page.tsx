@@ -86,7 +86,7 @@ function EditPage() {
         formData.append("image", file);
         formData.append("imageUrlToReplace", thread.images[index]);
 
-        const response = await axios.put<ApiResponse>(
+        const response = await axios.put<any>(
           `/api/thread/update-post/image-update/${threadId}`,
           formData,
           {

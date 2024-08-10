@@ -16,7 +16,6 @@ import { AiOutlineClose } from "react-icons/ai"; // Import close icon
 import CommentCard from "./CommentCard";
 import { BsThreeDots } from "react-icons/bs";
 
-
 interface Tag {
   _id: string;
   name: string;
@@ -50,7 +49,7 @@ const PostCard: React.FC<CardProps> = ({
   images,
   owner,
   videos,
-  comments
+  comments,
 }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState<number>(0);
@@ -134,7 +133,6 @@ const PostCard: React.FC<CardProps> = ({
     }
   }, [threadId]);
 
-
   const handleSave = async () => {
     try {
       const response = await axios.post<ApiResponse>(
@@ -155,7 +153,7 @@ const PostCard: React.FC<CardProps> = ({
     if (threadId) {
       fetchLikeCount();
     }
-  }, [threadId,fetchLikeCount]);
+  }, [threadId, fetchLikeCount]);
 
   const openFullScreen = (image: string) => {
     setSelectedImage(image);
@@ -182,7 +180,6 @@ const PostCard: React.FC<CardProps> = ({
     setIsShowComments(!isShowComments);
   };
 
-
   const handleShare = () => {
     const link = `http://localhost:3000/post/${threadId}`;
     navigator.clipboard.writeText(link);
@@ -207,8 +204,9 @@ const PostCard: React.FC<CardProps> = ({
       }
     }
   };
- 
 
+
+  
   return (
     <div className="md:w-96 w-80 lg:w-[500px] rounded overflow-hidden p-2 my-2">
       <div className="flex flex-row justify-between items-start gap-3">
@@ -221,8 +219,8 @@ const PostCard: React.FC<CardProps> = ({
                   "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
                 }
                 alt="Avatar"
-                width={12}
-                height={12}
+                width={300}
+                height={150}
               />
             </div>
           </div>
@@ -242,7 +240,7 @@ const PostCard: React.FC<CardProps> = ({
         <button className="btn btn-square btn-circle">
           <div className="dropdown dropdown-bottom dropdown-end">
             <div tabIndex={0} role="button">
-              <BsThreeDots  size={24}/>
+              <BsThreeDots size={24} />
             </div>
             <ul
               tabIndex={0}
@@ -251,11 +249,21 @@ const PostCard: React.FC<CardProps> = ({
               <li className="flex">
                 <a onClick={handleSave}>save</a>
               </li>
-              <li className={user?.username === owner?.username ? "block" : "hidden"}>
+              <li
+                className={
+                  user?.username === owner?.username ? "block" : "hidden"
+                }
+              >
                 <Link href={`postEdit/${threadId}`}>Edit</Link>
               </li>
-              <li className={user?.username === owner?.username ? "block" : "hidden"}>
-                {user?._id === owner?._id && <a onClick={handleDelete}>Delete</a>}
+              <li
+                className={
+                  user?.username === owner?.username ? "block" : "hidden"
+                }
+              >
+                {user?._id === owner?._id && (
+                  <a onClick={handleDelete}>Delete</a>
+                )}
               </li>
               <li>
                 <a onClick={handleShare}>Copy link</a>
@@ -266,10 +274,17 @@ const PostCard: React.FC<CardProps> = ({
       </div>
 
       <div className="px-6 pt-4">
-        <Link href={`/post/${threadId}`} className="font-semibold">{description}</Link>
+        <Link href={`/post/${threadId}`} className="font-semibold">
+          {description}
+        </Link>
       </div>
       <div className="px-6  pb-5">
-        <Link href={`/search/tag/${tag?.name}`} className="link link-primary mr-2">#{tag?.name}</Link>
+        <Link
+          href={`/search/tag/${tag?.name}`}
+          className="link link-primary mr-2"
+        >
+          #{tag?.name}
+        </Link>
       </div>
       <div className="carousel w-full">
         {images?.map((image, index) => (

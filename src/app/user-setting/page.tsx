@@ -243,6 +243,7 @@ function SettingPage() {
                     placeholder="Username"
                     value={userDetails.username}
                     onChange={handleInputChange}
+                    disabled
                     className="input input-bordered input-info w-full max-w-xs"
                   />
                 </div>

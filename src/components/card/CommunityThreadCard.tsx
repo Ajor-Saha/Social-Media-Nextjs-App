@@ -56,6 +56,8 @@ function CommunityThreadCard({
   const [comment, setComment] = useState<string>("");
   const [isShowComments, setIsShowComments] = useState(false);
   const [threadComments, setThreadComments] = useState<Comment[]>([]);
+  const [isFullScreen, setIsFullScreen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { data: session } = useSession();
@@ -182,7 +184,37 @@ function CommunityThreadCard({
       toast.error(axiosError.response?.data.message ?? "Error saving post");
     }
   };
- 
+
+
+  const handleDelete = async () => {
+    if (confirm("Are you sure you want to delete this thread?")) {
+      try {
+        const response = await axios.delete<ApiResponse>(
+          `/api/thread/delete-post/${thread?._id}`
+        );
+        if (response.data.success) {
+          toast.success(response.data.message);
+          window.location.reload();
+        } else {
+          toast.error(response.data.message);
+        }
+      } catch (error) {
+        const axiosError = error as AxiosError<ApiResponse>;
+        toast.error(axiosError.response?.data.message ?? "Error deleting post");
+      }
+    }
+  };
+
+  const openFullScreen = (image: string) => {
+    setSelectedImage(image);
+    setIsFullScreen(true);
+  };
+
+  const closeFullScreen = () => {
+    setIsFullScreen(false);
+    setSelectedImage(null);
+  };
+
 
   return (
     <div className="md:w-96 w-80 lg:w-[500px] rounded overflow-hidden p-2 my-2 border-b border-gray-400">
@@ -229,8 +261,8 @@ function CommunityThreadCard({
               <li className={user?.username === thread?.ownerId?.username ? "block" : "hidden"}>
                 <Link href={`/postEdit/${thread?._id}`}>Edit</Link>
               </li>
-              <li>
-                <a>Follow</a>
+              <li className={user?.username === thread?.ownerId?.username ? "block" : "hidden"}>
+                {user?._id === thread?.ownerId?._id && <a onClick={handleDelete}>Delete</a>}
               </li>
               <li>
                 <a onClick={handleShare}>Copy link</a>
@@ -257,6 +289,7 @@ function CommunityThreadCard({
                 width={400}
                 height={200}
                 className="rounded-box cursor-pointer w-[300px] sm:w-[320px] md:w-[350px] lg:w-[450px]"
+                onClick={() => openFullScreen(image)}
               />
             </div>
           ))}
@@ -294,6 +327,26 @@ function CommunityThreadCard({
           <GoShareAndroid size={20} />
         </button>
       </div>
+      {isFullScreen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="relative">
+            <Image
+              src={selectedImage!}
+              alt="Full Screen Image"
+              width={800}
+              height={600}
+              className="rounded"
+            />
+            <button
+              className="absolute top-4 right-4 bg-white rounded-full p-2"
+              onClick={closeFullScreen}
+            >
+              <AiOutlineClose size={24} />
+            </button>
+          </div>
+        </div>
+      )}
+
       {isModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
           <div className="card card-side bg-base-100 shadow-xl w-[450px] md:w-[600px] lg:w-[750px] h-[650px]">

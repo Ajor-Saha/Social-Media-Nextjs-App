@@ -29,7 +29,10 @@ export async function GET(request: Request) {
     }
 
     // Return the user data
-    return Response.json({ success: true, data, message: 'User details fetched successfully' }, { status: 201 });
+    return Response.json(
+      { success: true, data, message: "User details fetched successfully" },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("An upexpected error occured: ", error);
     return Response.json(
