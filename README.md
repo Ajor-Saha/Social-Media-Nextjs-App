@@ -1,36 +1,122 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# ThreadHub
+[Visit Now](https://social-media-nextjs-app.vercel.app/) 🚀
 
-## Getting Started
+## <a name="description">Project Description </a>
 
-First, run the development server:
+This web application is inspired by the popular Thread app and is designed to provide users with a comprehensive platform for social interaction, content sharing, and community building. The application offers a secure and engaging environment where users can create and manage posts, join communities, interact with other users, and explore content through advanced search and filtering options. Additionally, the app leverages cutting-edge AI technologies, including the Gemini API and Hugging Face models, to enhance the user experience by enabling AI-assisted post creation.
+
+## <a name="tech-stack">⚙️ Tech Stack</a>
+
+- Next.js
+- TypeScript
+- Mongodb
+- Next-Auth
+- React Hook Form
+- Zod
+- TailwindCSS
+- DaisyUI
+- Cloudinary
+
+
+## <a name="features">🔋 Features</a>
+
+### User Authentication and Profile Management
+
+- Secure user signup and login with OTP verification.
+
+- Ability for users to view and update their profile details.
+
+### Post Creation and Interaction
+
+- Users can create, edit, and delete posts.
+- Posts support multimedia content such as pictures, descriptions, and videos.
+
+- Posts can be tagged, allowing users to view all posts related to a particular tag.
+
+- Users can like and comment on posts.
+
+### Community Features
+
+- Users can create and join communities.
+
+- Each community has an admin who can manage the community and its members.
+
+- Community members can create and delete posts within the community.
+
+### Advanced Search and Filter
+
+- Comprehensive search functionality that allows users to search for other users, communities, topics, and posts.
+
+- Advanced filtering options to narrow down search results.
+
+### Social Features
+
+- Users can follow other users and view posts from the people they follow on their homepage.
+
+- Homepage includes sections like "Home," "For You," and "Following" to categorize posts.
+
+### AI-Assisted Post Creation
+
+- Integration with Gemini API and Hugging Face models for AI-assisted post creation.
+
+- AI models provide text-to-image and image-to-text capabilities to enhance content creation.
+
+
+## <a name="quick-start">🤸 Quick Start</a>
+
+Follow these steps to set up the project locally on your machine.
+
+**Prerequisites**
+
+Make sure you have the following installed on your machine:
+
+- [Git](https://git-scm.com/)
+- [Node.js](https://nodejs.org/en)
+- [npm](https://www.npmjs.com/) (Node Package Manager)
+
+**Cloning the Repository**
+
+```bash
+git clone https://github.com/Ajor-Saha/Social-Media-Nextjs-App.git
+cd Social-Media-Nextjs-App-main
+```
+
+**Installation**
+
+Install the project dependencies using npm:
+
+```bash
+npm install
+```
+
+**Start the project**
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser to view the project.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
 
-## Learn More
+<details>
+<summary><code>.env.example</code></summary>
 
-To learn more about Next.js, take a look at the following resources:
+```env
+EMAIL_USER=
+EMAIL_PASS=
+MONGODB_URI = 
+NEXTAUTH_SECRET = 
+GOOGLE_CLIENT_ID = 
+GOOGLE_CLIENT_SECRET = 
+CLOUDINARY_CLOUD_NAME = 
+CLOUDINARY_API_KEY = 
+CLOUDINARY_API_SECRET = 
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+HUGGING_FACE_API_KEY= 
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+API_KEY = 
+STABILITY_API_KEY = 
+```
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+</details>
