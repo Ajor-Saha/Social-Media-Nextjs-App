@@ -154,8 +154,8 @@ function UserDashboard() {
         );
 
         if (response.data.success) {
-          toast.success("Profile picture updated successfully");
-          fetchUserDetails(); // Refetch user details to update the avatar
+          fetchUserDetails();
+          // Refetch user details to update the avatar
         } else {
           toast.error(response.data.message);
         }
@@ -205,7 +205,10 @@ function UserDashboard() {
                   alt="pic"
                   height={200}
                   width={300}
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                  src={
+                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" ||
+                    "/avatarOne.jpg"
+                  }
                 />
               </div>
             </div>
@@ -215,7 +218,10 @@ function UserDashboard() {
                   alt="pic"
                   height={200}
                   width={300}
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                  src={
+                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" ||
+                    "/avatarOne.jpg"
+                  }
                 />
               </div>
             </div>
@@ -225,7 +231,10 @@ function UserDashboard() {
                   alt="pic"
                   height={200}
                   width={300}
-                  src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg"
+                  src={
+                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" ||
+                    "/avatarOne.jpg"
+                  }
                 />
               </div>
             </div>
