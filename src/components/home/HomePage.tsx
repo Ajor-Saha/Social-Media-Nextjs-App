@@ -111,6 +111,7 @@ const HomePage = () => {
               owner={item.ownerId}
               videos={item.videos}
               comments={item.comments}
+              createdAt={item?.createdAt}
             />
           ))
         ) : (

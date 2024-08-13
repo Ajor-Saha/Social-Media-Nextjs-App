@@ -135,6 +135,7 @@ function PostPage() {
             owner={post.ownerId}
             videos={post.videos}
             comments={post.comments}
+            createdAt={post?.createdAt}
           />
           {threadComments.map((com, index) => (
             <div key={index} className="border-b-2 border-gray-500 pb-4 mb-2">

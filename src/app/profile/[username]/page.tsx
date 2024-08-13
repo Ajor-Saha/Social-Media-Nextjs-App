@@ -172,10 +172,7 @@ function UserProfile() {
             <div className="avatar">
               <div className="w-12">
                 <Image
-                  src={
-                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" ||
-                    "/avatarOne.jpg"
-                  }
+                  src="/ava1.webp"
                   alt="pic"
                   width={20}
                   height={20}
@@ -185,10 +182,7 @@ function UserProfile() {
             <div className="avatar">
               <div className="w-12">
                 <Image
-                  src={
-                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" ||
-                    "/avatarOne.jpg"
-                  }
+                  src="/ava1.webp"
                   alt="pic"
                   width={20}
                   height={20}
@@ -198,10 +192,7 @@ function UserProfile() {
             <div className="avatar">
               <div className="w-12">
                 <Image
-                  src={
-                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" ||
-                    "/avatarOne.jpg"
-                  }
+                  src="/ava1.webp"
                   alt="pic"
                   width={20}
                   height={20}
@@ -261,6 +252,7 @@ function UserProfile() {
                         images={thread.images}
                         owner={thread.ownerId}
                         videos={thread.videos}
+                        createdAt={thread?.createdAt}
                       />
                     ))
                   ) : (
@@ -300,6 +292,7 @@ function UserProfile() {
                           owner={reply?.thread?.ownerId}
                           videos={reply?.thread?.videos}
                           comments={reply?.thread?.comments}
+                          createdAt={reply?.thread?.createdAt}
                         />
                         <div className="border-b-2 border-gray-500 flex flex-col">
                           <div className="flex gap-2">

@@ -348,6 +348,7 @@ function SettingPage() {
                       owner={thread?.ownerId}
                       videos={thread?.videos}
                       comments={thread?.comments}
+                      createdAt={thread?.createdAt}
                     />
                   ))}
                 </div>

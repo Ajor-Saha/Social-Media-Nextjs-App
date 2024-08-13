@@ -15,6 +15,7 @@ import Link from "next/link";
 import { AiOutlineClose } from "react-icons/ai"; // Import close icon
 import CommentCard from "./CommentCard";
 import { BsThreeDots } from "react-icons/bs";
+import { formatDistanceToNow } from "date-fns";
 
 interface Tag {
   _id: string;
@@ -35,6 +36,7 @@ interface CardProps {
   videos: string[];
   owner: owner;
   comments?: number;
+  createdAt?: string;
 }
 
 interface Comment {
@@ -50,6 +52,7 @@ const PostCard: React.FC<CardProps> = ({
   owner,
   videos,
   comments,
+  createdAt
 }) => {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState<number>(0);
@@ -205,6 +208,25 @@ const PostCard: React.FC<CardProps> = ({
     }
   };
 
+  const formatTimeAgo = (date: string) => {
+    const diffInSeconds = (new Date().getTime() - new Date(date).getTime()) / 1000;
+
+    if (diffInSeconds < 60) {
+      return `${Math.floor(diffInSeconds)}s`;
+    } else if (diffInSeconds < 3600) {
+      return `${Math.floor(diffInSeconds / 60)} m`;
+    } else if (diffInSeconds < 86400) {
+      return `${Math.floor(diffInSeconds / 3600)} h`;
+    } else if (diffInSeconds < 2592000) {
+      return `${Math.floor(diffInSeconds / 86400)} d`;
+    } else if (diffInSeconds < 31536000) {
+      return `${Math.floor(diffInSeconds / 2592000)} mon`;
+    } else {
+      return `${Math.floor(diffInSeconds / 31536000)} y`;
+    }
+  };
+
+  const timeAgo = createdAt ? formatTimeAgo(createdAt) : "";
 
   
   return (
@@ -234,7 +256,7 @@ const PostCard: React.FC<CardProps> = ({
             >
               <h3 className="font-semibold text-xl">{owner?.username}</h3>
             </Link>
-            <p className="font-semibold text-gray-500">1d</p>
+            <p className="font-semibold text-gray-500">{timeAgo}</p>
           </div>
         </div>
         <button className="btn btn-square btn-circle">

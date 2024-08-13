@@ -15,6 +15,7 @@ import CommentCard from "./CommentCard";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { User } from "next-auth";
+import { formatDistanceToNow } from "date-fns";
 // Define the types for the thread prop
 interface Thread {
   _id: string;
@@ -215,6 +216,28 @@ function CommunityThreadCard({
     setSelectedImage(null);
   };
 
+  const formatTimeAgo = (date: string) => {
+    const diffInSeconds = (new Date().getTime() - new Date(date).getTime()) / 1000;
+
+    if (diffInSeconds < 60) {
+      return `${Math.floor(diffInSeconds)}s`;
+    } else if (diffInSeconds < 3600) {
+      return `${Math.floor(diffInSeconds / 60)} m`;
+    } else if (diffInSeconds < 86400) {
+      return `${Math.floor(diffInSeconds / 3600)} h`;
+    } else if (diffInSeconds < 2592000) {
+      return `${Math.floor(diffInSeconds / 86400)} d`;
+    } else if (diffInSeconds < 31536000) {
+      return `${Math.floor(diffInSeconds / 2592000)} mon`;
+    } else {
+      return `${Math.floor(diffInSeconds / 31536000)} y`;
+    }
+  };
+
+  const timeAgo = thread?.createdAt ? formatTimeAgo(thread?.createdAt) : "";
+
+  
+  
 
   return (
     <div className="md:w-96 w-80 lg:w-[500px] rounded overflow-hidden p-2 my-2 border-b border-gray-400">
@@ -243,7 +266,7 @@ function CommunityThreadCard({
                 {thread.ownerId?.username}
               </h3>
             </Link>
-            <p className="font-semibold text-gray-500">1d</p>
+            <p className="font-semibold text-gray-500">{timeAgo}</p>
           </div>
         </div>
         <button className="btn btn-square btn-circle">

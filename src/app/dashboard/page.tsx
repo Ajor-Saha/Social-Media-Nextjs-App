@@ -168,6 +168,10 @@ function UserDashboard() {
     }
   };
 
+  //createdAt
+
+  
+
   return (
     <div className="py-20 flex flex-col justify-center items-center">
       <div className="card md:border-x border-gray-100 md:w-[550px] lg:w-[650px] sm:w-[500px] w-[400px] bg-base-100 shadow-xl">
@@ -205,10 +209,7 @@ function UserDashboard() {
                   alt="pic"
                   height={200}
                   width={300}
-                  src={
-                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" ||
-                    "/avatarOne.jpg"
-                  }
+                  src="/ava1.webp"
                 />
               </div>
             </div>
@@ -218,10 +219,7 @@ function UserDashboard() {
                   alt="pic"
                   height={200}
                   width={300}
-                  src={
-                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" ||
-                    "/avatarOne.jpg"
-                  }
+                  src="/ava1.webp"
                 />
               </div>
             </div>
@@ -231,10 +229,7 @@ function UserDashboard() {
                   alt="pic"
                   height={200}
                   width={300}
-                  src={
-                    "https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.jpg" ||
-                    "/avatarOne.jpg"
-                  }
+                  src="/ava1.webp"
                 />
               </div>
             </div>
@@ -308,6 +303,7 @@ function UserDashboard() {
                         owner={thread?.ownerId}
                         videos={thread?.videos}
                         comments={thread?.comments}
+                        createdAt={thread?.createdAt}
                       />
                     ))
                   ) : (
@@ -349,6 +345,7 @@ function UserDashboard() {
                           owner={reply?.thread?.ownerId}
                           videos={reply?.thread?.videos}
                           comments={reply?.thread?.comments}
+                          createdAt={reply?.thread?.createdAt}
                         />
                         <div className="border-b-2 border-gray-500 flex flex-col">
                           <div className="flex gap-2">
